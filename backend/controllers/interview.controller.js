@@ -286,7 +286,7 @@ const completeInterview = async (req, res) => {
       return sum + question.evaluation.overall;
     }, 0);
 
-    const score = Math.round(totalScore / answeredQuestions.length);
+    const score = Math.round((totalScore / answeredQuestions.length) * 10);
 
     interview.score = score;
     interview.status = "completed";

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { createInterview } from "../../services/interview.service";
+import Navbar from "../../components/Navbar";
 
 const InterviewSetup = () => {
   const navigate = useNavigate();
@@ -56,125 +57,129 @@ const InterviewSetup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-2xl bg-white rounded-2xl shadow-md p-8"
-      >
-        <h1 className="text-3xl font-bold mb-2">Start AI Interview</h1>
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
 
-        <p className="text-gray-500 mb-8">
-          Configure your interview before starting.
-        </p>
+      <main className="min-h-[calc(100vh-73px)] flex items-center justify-center px-4 py-8">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-2xl bg-white rounded-2xl shadow-md p-8"
+        >
+          <h1 className="text-3xl font-bold mb-2">Start AI Interview</h1>
 
-        {error && (
-          <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-5">
-            {error}
-          </div>
-        )}
+          <p className="text-gray-500 mb-8">
+            Configure your interview before starting.
+          </p>
 
-        <div className="space-y-5">
-          <div>
-            <label className="block font-medium mb-2">Target Role</label>
+          {error && (
+            <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-5">
+              {error}
+            </div>
+          )}
 
-            <input
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3"
-              placeholder="Software Developer"
-            />
-          </div>
+          <div className="space-y-5">
+            <div>
+              <label className="block font-medium mb-2">Target Role</label>
 
-          <div>
-            <label className="block font-medium mb-2">Experience</label>
+              <input
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3"
+                placeholder="Software Developer"
+              />
+            </div>
 
-            <select
-              name="experience"
-              value={formData.experience}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3"
+            <div>
+              <label className="block font-medium mb-2">Experience</label>
+
+              <select
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3"
+              >
+                <option value="Fresher">Fresher</option>
+                <option value="0-1 years">0-1 years</option>
+                <option value="1-3 years">1-3 years</option>
+                <option value="3+ years">3+ years</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-medium mb-2">Interview Type</label>
+
+              <select
+                name="interviewType"
+                value={formData.interviewType}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3"
+              >
+                <option value="technical">Technical</option>
+                <option value="hr">HR</option>
+                <option value="behavioral">Behavioral</option>
+                <option value="coding">Coding</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-medium mb-2">Difficulty</label>
+
+              <select
+                name="difficulty"
+                value={formData.difficulty}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3"
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-medium mb-2">Topics</label>
+
+              <input
+                name="topics"
+                value={formData.topics}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3"
+                placeholder="DSA, DBMS, OOP, JavaScript"
+              />
+
+              <p className="text-sm text-gray-500 mt-1">
+                Separate topics with commas.
+              </p>
+            </div>
+
+            <div>
+              <label className="block font-medium mb-2">Duration</label>
+
+              <select
+                name="duration"
+                value={formData.duration}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3"
+              >
+                <option value="10">10 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
             >
-              <option value="Fresher">Fresher</option>
-              <option value="0-1 years">0-1 years</option>
-              <option value="1-3 years">1-3 years</option>
-              <option value="3+ years">3+ years</option>
-            </select>
+              {loading ? "Creating Interview..." : "Start AI Interview"}
+            </button>
           </div>
-
-          <div>
-            <label className="block font-medium mb-2">Interview Type</label>
-
-            <select
-              name="interviewType"
-              value={formData.interviewType}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3"
-            >
-              <option value="technical">Technical</option>
-              <option value="hr">HR</option>
-              <option value="behavioral">Behavioral</option>
-              <option value="coding">Coding</option>
-              <option value="mixed">Mixed</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block font-medium mb-2">Difficulty</label>
-
-            <select
-              name="difficulty"
-              value={formData.difficulty}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3"
-            >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block font-medium mb-2">Topics</label>
-
-            <input
-              name="topics"
-              value={formData.topics}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3"
-              placeholder="DSA, DBMS, OOP, JavaScript"
-            />
-
-            <p className="text-sm text-gray-500 mt-1">
-              Separate topics with commas.
-            </p>
-          </div>
-
-          <div>
-            <label className="block font-medium mb-2">Duration</label>
-
-            <select
-              name="duration"
-              value={formData.duration}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3"
-            >
-              <option value="10">10 minutes</option>
-              <option value="20">20 minutes</option>
-              <option value="30">30 minutes</option>
-              <option value="45">45 minutes</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
-          >
-            {loading ? "Creating Interview..." : "Start AI Interview"}
-          </button>
-        </div>
-      </form>
+        </form>
+      </main>
     </div>
   );
 };
