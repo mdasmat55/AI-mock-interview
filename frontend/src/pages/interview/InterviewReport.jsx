@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { generateReport } from "../../services/interview.service";
+import {
+  generateReport,
+  getInterviewById,
+} from "../../services/interview.service";
 
 const InterviewReport = () => {
   const { interviewId } = useParams();
   const navigate = useNavigate();
 
-  const [report, setReport] = useState(null);
+const [report, setReport] = useState(null);
+const [interview, setInterview] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -15,8 +20,11 @@ const InterviewReport = () => {
     const loadReport = async () => {
       try {
         const result = await generateReport(interviewId);
-
         setReport(result.report);
+
+        const interviewResult = await getInterviewById(interviewId);
+        setInterview(interviewResult.interview);
+
       } catch (error) {
         console.error(error);
 
@@ -204,6 +212,141 @@ const InterviewReport = () => {
           </ul>
         </div>
 
+        {/* Question-by-Question Review */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-5">
+            Question-by-Question Review
+          </h2>
+
+          <div className="space-y-5">
+            {interview?.questions
+              ?.filter((question) => question.userAnswer?.trim())
+              .map((question, index) => (
+                <div
+                  key={question._id}
+                  className="bg-white rounded-2xl shadow-sm p-8"
+                >
+                  {/* Question */}
+                  <div className="mb-6">
+                    <p className="text-sm text-gray-500 mb-2">
+                      Question {index + 1}
+                    </p>
+
+                    <h3 className="text-lg font-semibold leading-relaxed">
+                      {question.question}
+                    </h3>
+                  </div>
+
+                  {/* Candidate Answer */}
+                  <div className="mb-6">
+                    <p className="text-sm font-semibold text-gray-500 mb-2">
+                      Your Answer
+                    </p>
+
+                    <div className="bg-gray-50 rounded-xl p-5">
+                      <p className="text-gray-700 whitespace-pre-wrap">
+                        {question.userAnswer}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Evaluation */}
+                  <div>
+                    <p className="text-sm font-semibold text-gray-500 mb-3">
+                      AI Evaluation
+                    </p>
+
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+
+                      <EvaluationScore
+                        title="Correctness"
+                        score={question.evaluation?.correctness}
+                      />
+
+                      <EvaluationScore
+                        title="Relevance"
+                        score={question.evaluation?.relevance}
+                      />
+
+                      <EvaluationScore
+                        title="Clarity"
+                        score={question.evaluation?.clarity}
+                      />
+
+                      <EvaluationScore
+                        title="Completeness"
+                        score={question.evaluation?.completeness}
+                      />
+
+                      <EvaluationScore
+                        title="Technical Depth"
+                        score={question.evaluation?.technicalDepth}
+                      />
+
+                    </div>
+                  </div>
+
+                  {/* Feedback */}
+                  {question.evaluation?.feedback && (
+                    <div className="mt-6">
+                      <p className="text-sm font-semibold text-gray-500 mb-2">
+                        AI Feedback
+                      </p>
+
+                      <p className="text-gray-600 leading-relaxed">
+                        {question.evaluation.feedback}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Strengths */}
+                  {question.evaluation?.strengths?.length > 0 && (
+                    <div className="mt-5">
+                      <p className="font-semibold mb-2">
+                        Strengths
+                      </p>
+
+                      <ul className="space-y-2">
+                        {question.evaluation.strengths.map(
+                          (strength, strengthIndex) => (
+                            <li
+                              key={strengthIndex}
+                              className="text-gray-600"
+                            >
+                              ✓ {strength}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Weaknesses */}
+                  {question.evaluation?.weaknesses?.length > 0 && (
+                    <div className="mt-5">
+                      <p className="font-semibold mb-2">
+                        Areas to Improve
+                      </p>
+
+                      <ul className="space-y-2">
+                        {question.evaluation.weaknesses.map(
+                          (weakness, weaknessIndex) => (
+                            <li
+                              key={weaknessIndex}
+                              className="text-gray-600"
+                            >
+                              • {weakness}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
+
         {/* Action */}
         <div className="text-center">
           <button
@@ -232,6 +375,23 @@ const ScoreCard = ({ title, score }) => {
 
       <p className="text-xs text-gray-400">
         / 100
+      </p>
+    </div>
+  );
+};
+
+const EvaluationScore = ({ title, score }) => {
+  return (
+    <div className="bg-gray-50 rounded-xl p-4 text-center">
+      <p className="text-xs text-gray-500 mb-1">
+        {title}
+      </p>
+
+      <p className="text-xl font-bold">
+        {score ?? 0}
+        <span className="text-xs text-gray-400">
+          /10
+        </span>
       </p>
     </div>
   );

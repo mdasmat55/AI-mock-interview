@@ -13,8 +13,7 @@ const Interview = () => {
 
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [questionNumber, setQuestionNumber] = useState(1);
-
+  const [questionIndex, setQuestionIndex] = useState(0);
   const [duration, setDuration] = useState(20 * 60);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -77,35 +76,37 @@ const Interview = () => {
     }
   };
 
-  const handleSubmitAnswer = async () => {
-    if (!answer.trim()) {
-      setError("Please enter your answer.");
-      return;
-    }
+const handleSubmitAnswer = async () => {
+  if (!answer.trim()) {
+    setError("Please enter your answer.");
+    return;
+  }
 
-    try {
-      setSubmitting(true);
-      setError("");
+  try {
+    setSubmitting(true);
+    setError("");
 
-      const result = await submitAnswer(
-        interviewId,
-        answer
-      );
+    const result = await submitAnswer(
+      interviewId,
+      questionIndex,
+      answer
+    );
 
-      setQuestion(result.nextQuestion);
-      setAnswer("");
-      setQuestionNumber((prev) => prev + 1);
-    } catch (error) {
-      console.error(error);
+    setQuestion(result.nextQuestion);
+    setAnswer("");
+    setQuestionIndex((prev) => prev + 1);
 
-      setError(
-        error.response?.data?.message ||
-          "Failed to submit answer"
-      );
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error.response?.data?.message ||
+        "Failed to submit answer"
+    );
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const handleCompleteInterview = async () => {
     try {
@@ -189,7 +190,7 @@ const Interview = () => {
               </p>
 
               <p className="text-xl font-semibold">
-                {questionNumber}
+                {questionIndex + 1}
               </p>
             </div>
 

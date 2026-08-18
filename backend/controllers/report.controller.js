@@ -44,22 +44,42 @@ const createReport = async (req, res) => {
 
     const reportData = await generateInterviewReport(interview);
 
-    const report = await Report.create({
-      interview: interview._id,
-      user: req.user._id,
+    let report;
 
-      overallScore: reportData.overallScore,
-      technicalScore: reportData.technicalScore,
-      problemSolvingScore: reportData.problemSolvingScore,
-      clarityScore: reportData.clarityScore,
-      completenessScore: reportData.completenessScore,
+    try {
+      report = await Report.create({
+        interview: interview._id,
+        user: req.user._id,
 
-      strengths: reportData.strengths,
-      weaknesses: reportData.weaknesses,
-      recommendations: reportData.recommendations,
+        overallScore: reportData.overallScore,
+        technicalScore: reportData.technicalScore,
+        problemSolvingScore: reportData.problemSolvingScore,
+        clarityScore: reportData.clarityScore,
+        completenessScore: reportData.completenessScore,
 
-      summary: reportData.summary,
-    });
+        strengths: reportData.strengths,
+        weaknesses: reportData.weaknesses,
+        recommendations: reportData.recommendations,
+
+        summary: reportData.summary,
+      });
+    } catch (error) {
+      // Another request may have created the report
+      // while this request was generating it.
+      if (error.code === 11000) {
+        const existingReport = await Report.findOne({
+          interview: interview._id,
+        });
+
+        return res.status(200).json({
+          success: true,
+          message: "Report already exists",
+          report: existingReport,
+        });
+      }
+
+      throw error;
+    }
 
     res.status(201).json({
       success: true,

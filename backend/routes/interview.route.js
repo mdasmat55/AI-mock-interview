@@ -4,6 +4,8 @@ const { protect } = require("../middlewares/auth.middleware");
 
 const {
   createInterview,
+  getMyInterviews,
+  getInterviewById,
   startInterview,
   submitAnswer,
   completeInterview,
@@ -12,6 +14,10 @@ const {
 const router = express.Router();
 
 router.post("/create", protect, createInterview);
+
+router.get("/my-interviews", protect, getMyInterviews);
+
+router.get("/:id", protect, getInterviewById);
 
 router.post("/:id/start", protect, startInterview);
 

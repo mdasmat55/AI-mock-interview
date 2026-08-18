@@ -47,6 +47,57 @@ const createInterview = async (req, res) => {
   }
 };
 
+const getMyInterviews = async (req, res) => {
+  try {
+    const interviews = await Interview.find({
+      user: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      interviews,
+    });
+  } catch (error) {
+    console.error("Get my interviews error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch interviews",
+    });
+  }
+};
+
+const getInterviewById = async (req, res) => {
+  try {
+    const interview = await Interview.findById(req.params.id);
+
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    if (interview.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to access this interview",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      interview,
+    });
+  } catch (error) {
+    console.error("Get interview by ID error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch interview",
+    });
+  }
+};
 
 const startInterview = async (req, res) => {
   try {
@@ -109,7 +160,7 @@ const startInterview = async (req, res) => {
 
 const submitAnswer = async (req, res) => {
   try {
-    const { answer } = req.body;
+    const { answer, questionIndex } = req.body;
 
     if (!answer || !answer.trim()) {
       return res.status(400).json({
@@ -141,6 +192,14 @@ const submitAnswer = async (req, res) => {
       });
     }
 
+    if (questionIndex !== interview.currentQuestion) {
+      return res.status(409).json({
+        success: false,
+        message: "Question is out of sync. Please refresh the interview.",
+      });
+    }
+
+    
     const currentQuestionIndex = interview.currentQuestion;
 
     const currentQuestion =
@@ -269,6 +328,8 @@ const completeInterview = async (req, res) => {
 
 module.exports = {
   createInterview,
+  getMyInterviews,
+  getInterviewById,
   startInterview,
   submitAnswer,
   completeInterview,

@@ -123,7 +123,50 @@ const login = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const { name, skills, targetRole, education } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.name = name ?? user.name;
+    user.skills = skills ?? user.skills;
+    user.targetRole = targetRole ?? user.targetRole;
+    user.education = education ?? user.education;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        skills: user.skills,
+        targetRole: user.targetRole,
+        education: user.education,
+      },
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
+  updateProfile,
 };

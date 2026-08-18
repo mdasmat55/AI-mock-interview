@@ -14,12 +14,14 @@ export const startInterview = async (interviewId) => {
   return response.data;
 };
 
-export const submitAnswer = async (interviewId, answer) => {
+export const submitAnswer = async (interviewId, questionIndex, answer) => {
   const response = await api.post(
     `/interviews/${interviewId}/answer`,
-    { answer }
+    {
+      questionIndex,
+      answer,
+    }
   );
-
   return response.data;
 };
 
@@ -34,6 +36,14 @@ export const completeInterview = async (interviewId) => {
 export const generateReport = async (interviewId) => {
   const response = await api.post(
     `/reports/${interviewId}`
+  );
+
+  return response.data;
+};
+
+export const getInterviewById = async (interviewId) => {
+  const response = await api.get(
+    `/interviews/${interviewId}`
   );
 
   return response.data;

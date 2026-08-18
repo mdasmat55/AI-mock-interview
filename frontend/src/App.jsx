@@ -6,6 +6,8 @@ import InterviewReport from "./pages/interview/InterviewReport";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Profile from "./pages/profile/Profile";
 
 function App() {
   return (
@@ -56,6 +58,16 @@ function App() {
         <Route
           path="/interview/:interviewId/report"
           element={<InterviewReport />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="/profile"
+          element={<Profile />}
         />
 
       </Routes>
