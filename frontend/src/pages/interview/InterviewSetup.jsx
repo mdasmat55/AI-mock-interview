@@ -49,10 +49,7 @@ const InterviewSetup = () => {
     } catch (error) {
       console.error(error);
 
-      setError(
-        error.response?.data?.message ||
-          "Failed to create interview"
-      );
+      setError(error.response?.data?.message || "Failed to create interview");
     } finally {
       setLoading(false);
     }
@@ -64,9 +61,7 @@ const InterviewSetup = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-2xl bg-white rounded-2xl shadow-md p-8"
       >
-        <h1 className="text-3xl font-bold mb-2">
-          Start AI Interview
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">Start AI Interview</h1>
 
         <p className="text-gray-500 mb-8">
           Configure your interview before starting.
@@ -80,9 +75,7 @@ const InterviewSetup = () => {
 
         <div className="space-y-5">
           <div>
-            <label className="block font-medium mb-2">
-              Target Role
-            </label>
+            <label className="block font-medium mb-2">Target Role</label>
 
             <input
               name="role"
@@ -94,9 +87,7 @@ const InterviewSetup = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Experience
-            </label>
+            <label className="block font-medium mb-2">Experience</label>
 
             <select
               name="experience"
@@ -112,9 +103,7 @@ const InterviewSetup = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Interview Type
-            </label>
+            <label className="block font-medium mb-2">Interview Type</label>
 
             <select
               name="interviewType"
@@ -131,9 +120,7 @@ const InterviewSetup = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Difficulty
-            </label>
+            <label className="block font-medium mb-2">Difficulty</label>
 
             <select
               name="difficulty"
@@ -148,9 +135,7 @@ const InterviewSetup = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Topics
-            </label>
+            <label className="block font-medium mb-2">Topics</label>
 
             <input
               name="topics"
@@ -166,9 +151,7 @@ const InterviewSetup = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Duration
-            </label>
+            <label className="block font-medium mb-2">Duration</label>
 
             <select
               name="duration"
@@ -188,9 +171,7 @@ const InterviewSetup = () => {
             disabled={loading}
             className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
           >
-            {loading
-              ? "Creating Interview..."
-              : "Start AI Interview"}
+            {loading ? "Creating Interview..." : "Start AI Interview"}
           </button>
         </div>
       </form>

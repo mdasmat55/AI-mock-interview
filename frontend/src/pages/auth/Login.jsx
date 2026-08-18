@@ -40,10 +40,7 @@ const Login = () => {
     } catch (error) {
       console.error(error);
 
-      setError(
-        error.response?.data?.message ||
-          "Login failed"
-      );
+      setError(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -52,10 +49,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-
-        <h1 className="text-3xl font-bold">
-          Welcome Back
-        </h1>
+        <h1 className="text-3xl font-bold">Welcome Back</h1>
 
         <p className="text-gray-500 mt-2 mb-8">
           Login to continue your interview preparation.
@@ -67,14 +61,9 @@ const Login = () => {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block font-medium mb-2">
-              Email
-            </label>
+            <label className="block font-medium mb-2">Email</label>
 
             <input
               type="email"
@@ -88,9 +77,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Password
-            </label>
+            <label className="block font-medium mb-2">Password</label>
 
             <input
               type="password"
@@ -114,14 +101,10 @@ const Login = () => {
 
         <p className="text-center text-gray-500 mt-6">
           Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-black font-semibold"
-          >
+          <Link to="/register" className="text-black font-semibold">
             Register
           </Link>
         </p>
-
       </div>
     </div>
   );

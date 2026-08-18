@@ -6,7 +6,6 @@ const ai = new GoogleGenAI({
 
 const useMockAI = process.env.GEMINI_MODE === "mock";
 
-
 // --------------------------------------------------
 // MOCK QUESTIONS
 // --------------------------------------------------
@@ -38,7 +37,6 @@ const mockQuestions = {
   ],
 };
 
-
 // --------------------------------------------------
 // GET MOCK QUESTION
 // --------------------------------------------------
@@ -46,22 +44,18 @@ const mockQuestions = {
 const getMockQuestion = (topics, previousQuestions = []) => {
   const topic = topics?.[0] || "DSA";
 
-  const questions =
-    mockQuestions[topic] || mockQuestions.DSA;
+  const questions = mockQuestions[topic] || mockQuestions.DSA;
 
   const availableQuestions = questions.filter(
-    (question) => !previousQuestions.includes(question)
+    (question) => !previousQuestions.includes(question),
   );
 
   if (availableQuestions.length === 0) {
-    return questions[
-      previousQuestions.length % questions.length
-    ];
+    return questions[previousQuestions.length % questions.length];
   }
 
   return availableQuestions[0];
 };
-
 
 // --------------------------------------------------
 // GENERATE FIRST QUESTION
@@ -74,12 +68,10 @@ const generateFirstQuestion = async ({
   difficulty,
   topics,
 }) => {
-
   // MOCK MODE
   if (useMockAI) {
     return getMockQuestion(topics);
   }
-
 
   // GEMINI MODE
 
@@ -112,15 +104,12 @@ Return only the question text.
   return response.text.trim();
 };
 
-
 // --------------------------------------------------
 // MOCK EVALUATION
 // --------------------------------------------------
 
 const generateMockEvaluation = (userAnswer) => {
-
-  const hasAnswer =
-    userAnswer && userAnswer.trim().length > 10;
+  const hasAnswer = userAnswer && userAnswer.trim().length > 10;
 
   if (!hasAnswer) {
     return {
@@ -146,8 +135,7 @@ const generateMockEvaluation = (userAnswer) => {
     completeness: 7,
     technicalDepth: 6,
     overall: 7,
-    feedback:
-      "This is a mock evaluation used for development and testing.",
+    feedback: "This is a mock evaluation used for development and testing.",
     strengths: [
       "The candidate attempted the problem.",
       "The answer is relevant to the interview question.",
@@ -158,7 +146,6 @@ const generateMockEvaluation = (userAnswer) => {
     ],
   };
 };
-
 
 // --------------------------------------------------
 // EVALUATE ANSWER + GENERATE NEXT QUESTION
@@ -174,24 +161,17 @@ const evaluateAnswerAndGenerateNextQuestion = async ({
   userAnswer,
   previousQuestions,
 }) => {
-
   // MOCK MODE
   if (useMockAI) {
+    const evaluation = generateMockEvaluation(userAnswer);
 
-    const evaluation =
-      generateMockEvaluation(userAnswer);
-
-    const nextQuestion = getMockQuestion(
-      topics,
-      previousQuestions
-    );
+    const nextQuestion = getMockQuestion(topics, previousQuestions);
 
     return {
       evaluation,
       nextQuestion,
     };
   }
-
 
   // GEMINI MODE
 
@@ -271,7 +251,6 @@ Return ONLY valid JSON in this exact format:
 
   return JSON.parse(response.text);
 };
-
 
 module.exports = {
   generateFirstQuestion,

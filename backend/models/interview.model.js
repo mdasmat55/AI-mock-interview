@@ -59,7 +59,7 @@ const questionSchema = new mongoose.Schema(
       },
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const interviewSchema = new mongoose.Schema(
@@ -135,7 +135,7 @@ const interviewSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Interview", interviewSchema);

@@ -52,10 +52,7 @@ const Register = () => {
     } catch (error) {
       console.error(error);
 
-      setError(
-        error.response?.data?.message ||
-          "Registration failed"
-      );
+      setError(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -64,10 +61,7 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-md p-8">
-
-        <h1 className="text-3xl font-bold">
-          Create Account
-        </h1>
+        <h1 className="text-3xl font-bold">Create Account</h1>
 
         <p className="text-gray-500 mt-2 mb-8">
           Create your account and start practicing interviews.
@@ -79,14 +73,9 @@ const Register = () => {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block font-medium mb-2">
-              Name
-            </label>
+            <label className="block font-medium mb-2">Name</label>
 
             <input
               name="name"
@@ -99,9 +88,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Email
-            </label>
+            <label className="block font-medium mb-2">Email</label>
 
             <input
               type="email"
@@ -115,9 +102,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Password
-            </label>
+            <label className="block font-medium mb-2">Password</label>
 
             <input
               type="password"
@@ -131,9 +116,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Target Role
-            </label>
+            <label className="block font-medium mb-2">Target Role</label>
 
             <input
               name="targetRole"
@@ -145,9 +128,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Education
-            </label>
+            <label className="block font-medium mb-2">Education</label>
 
             <input
               name="education"
@@ -159,9 +140,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Skills
-            </label>
+            <label className="block font-medium mb-2">Skills</label>
 
             <input
               name="skills"
@@ -177,22 +156,16 @@ const Register = () => {
             disabled={loading}
             className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
           >
-            {loading
-              ? "Creating Account..."
-              : "Create Account"}
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
         <p className="text-center text-gray-500 mt-6">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-black font-semibold"
-          >
+          <Link to="/login" className="text-black font-semibold">
             Login
           </Link>
         </p>
-
       </div>
     </div>
   );

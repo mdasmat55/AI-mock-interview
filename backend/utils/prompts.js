@@ -5,14 +5,14 @@ const generateQuestionAnswerPrompt = (
   numberOfQuestions,
 ) => {
   const experienceLevel =
-    experience <= 2 ? "Junior" : experience <= 5 ? "Mid-Level" : "Senior"
+    experience <= 2 ? "Junior" : experience <= 5 ? "Mid-Level" : "Senior";
 
   const difficultyDistribution =
     experience <= 2
       ? "70% Easy, 30% Medium"
       : experience <= 5
         ? "40% Easy, 50% Medium, 10% Hard"
-        : "20% Easy, 50% Medium, 30% Hard"
+        : "20% Easy, 50% Medium, 30% Hard";
 
   return `
 ===========================================
@@ -86,8 +86,8 @@ Important:
 -Only return valid JSON
 -Do NOT add any extra text outside the JSON array
 ===========================================
-`
-}
+`;
+};
 
 const conceptExplainPrompt = (question) => {
   return `Task: Explain the technical concept or answer of the question in a clear, beginner-friendly way.
@@ -149,7 +149,7 @@ Example Output:
   }
 ]
 
-Generate ONLY the JSON array now. Do not include any text outside the JSON structure:`
-}
+Generate ONLY the JSON array now. Do not include any text outside the JSON structure:`;
+};
 
-module.exports = { generateQuestionAnswerPrompt, conceptExplainPrompt }
+module.exports = { generateQuestionAnswerPrompt, conceptExplainPrompt };

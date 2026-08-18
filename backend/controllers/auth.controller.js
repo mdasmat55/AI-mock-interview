@@ -5,14 +5,7 @@ const generateToken = require("../utils/jwt");
 
 const register = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      skills,
-      targetRole,
-      education,
-    } = req.body;
+    const { name, email, password, skills, targetRole, education } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -86,10 +79,7 @@ const login = async (req, res) => {
       });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({

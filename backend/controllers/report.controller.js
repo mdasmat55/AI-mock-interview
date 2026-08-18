@@ -1,9 +1,7 @@
 const Interview = require("../models/interview.model");
 const Report = require("../models/report.model");
 
-const {
-  generateInterviewReport,
-} = require("../services/report.service");
+const { generateInterviewReport } = require("../services/report.service");
 
 const createReport = async (req, res) => {
   try {

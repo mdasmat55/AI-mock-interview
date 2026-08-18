@@ -6,14 +6,8 @@ const {
 
 const createInterview = async (req, res) => {
   try {
-    const {
-      role,
-      experience,
-      interviewType,
-      difficulty,
-      topics,
-      duration,
-    } = req.body;
+    const { role, experience, interviewType, difficulty, topics, duration } =
+      req.body;
 
     if (!role || !experience) {
       return res.status(400).json({
@@ -199,11 +193,9 @@ const submitAnswer = async (req, res) => {
       });
     }
 
-    
     const currentQuestionIndex = interview.currentQuestion;
 
-    const currentQuestion =
-      interview.questions[currentQuestionIndex];
+    const currentQuestion = interview.questions[currentQuestionIndex];
 
     if (!currentQuestion) {
       return res.status(400).json({
@@ -212,21 +204,18 @@ const submitAnswer = async (req, res) => {
       });
     }
 
-    const previousQuestions = interview.questions.map(
-      (item) => item.question
-    );
+    const previousQuestions = interview.questions.map((item) => item.question);
 
-    const result =
-      await evaluateAnswerAndGenerateNextQuestion({
-        role: interview.role,
-        experience: interview.experience,
-        interviewType: interview.interviewType,
-        difficulty: interview.difficulty,
-        topics: interview.topics,
-        currentQuestion: currentQuestion.question,
-        userAnswer: answer,
-        previousQuestions,
-      });
+    const result = await evaluateAnswerAndGenerateNextQuestion({
+      role: interview.role,
+      experience: interview.experience,
+      interviewType: interview.interviewType,
+      difficulty: interview.difficulty,
+      topics: interview.topics,
+      currentQuestion: currentQuestion.question,
+      userAnswer: answer,
+      previousQuestions,
+    });
 
     currentQuestion.userAnswer = answer;
 
@@ -283,7 +272,7 @@ const completeInterview = async (req, res) => {
     }
 
     const answeredQuestions = interview.questions.filter(
-      (question) => question.userAnswer.trim() !== ""
+      (question) => question.userAnswer.trim() !== "",
     );
 
     if (answeredQuestions.length === 0) {
@@ -293,16 +282,11 @@ const completeInterview = async (req, res) => {
       });
     }
 
-    const totalScore = answeredQuestions.reduce(
-      (sum, question) => {
-        return sum + question.evaluation.overall;
-      },
-      0
-    );
+    const totalScore = answeredQuestions.reduce((sum, question) => {
+      return sum + question.evaluation.overall;
+    }, 0);
 
-    const score = Math.round(
-      totalScore / answeredQuestions.length
-    );
+    const score = Math.round(totalScore / answeredQuestions.length);
 
     interview.score = score;
     interview.status = "completed";
