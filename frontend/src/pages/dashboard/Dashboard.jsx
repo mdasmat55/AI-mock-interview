@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import { getMyInterviews } from "../../services/dashboard.service";
 import { useAuth } from "../../context/AuthContext";
+import Navbar from "../../components/Navbar";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,30 +54,10 @@ const Dashboard = () => {
         )
       : 0;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <nav className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">AI Interview</h1>
+     <div className="min-h-screen bg-gray-100">
 
-          <div className="flex items-center gap-4">
-            <span className="text-gray-600">{user?.name}</span>
-
-            <button
-              onClick={handleLogout}
-              className="border border-gray-300 px-4 py-2 rounded-lg"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="max-w-6xl mx-auto px-6 py-10">
         {/* Welcome */}
@@ -198,6 +179,7 @@ const Dashboard = () => {
           )}
         </div>
       </main>
+
     </div>
   );
 };
