@@ -15,6 +15,7 @@ const Interview = () => {
   const [answer, setAnswer] = useState("");
   const [questionNumber, setQuestionNumber] = useState(1);
 
+  const [duration, setDuration] = useState(20 * 60);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -25,6 +26,10 @@ const Interview = () => {
         const result = await startInterview(interviewId);
 
         setQuestion(result.question);
+
+        if (result.interview?.duration) {
+          setDuration(result.interview.duration * 60);
+        }
       } catch (error) {
         console.error(error);
 
@@ -39,6 +44,38 @@ const Interview = () => {
 
     start();
   }, [interviewId]);
+
+  useEffect(() => {
+    if (loading || duration <= 0) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setDuration((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+
+          handleAutoComplete();
+
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [loading]);
+
+  const handleAutoComplete = async () => {
+    try {
+      await completeInterview(interviewId);
+
+      navigate(`/interview/${interviewId}/report`);
+    } catch (error) {
+      console.error("Auto complete error:", error);
+    }
+  };
 
   const handleSubmitAnswer = async () => {
     if (!answer.trim()) {
@@ -90,6 +127,14 @@ const Interview = () => {
     }
   };
 
+  const minutes = Math.floor(duration / 60);
+  const seconds = duration % 60;
+
+  const formattedTime = `${String(minutes).padStart(
+    2,
+    "0"
+  )}:${String(seconds).padStart(2, "0")}`;
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -104,7 +149,9 @@ const Interview = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-red-500 mb-4">
+            {error}
+          </p>
 
           <button
             onClick={() => navigate("/interview/setup")}
@@ -133,19 +180,42 @@ const Interview = () => {
             </h1>
           </div>
 
-          <div className="text-right">
-            <p className="text-sm text-gray-500">
-              Question
-            </p>
+          <div className="flex items-center gap-8">
 
-            <p className="text-xl font-semibold">
-              {questionNumber}
-            </p>
+            {/* Question number */}
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                Question
+              </p>
+
+              <p className="text-xl font-semibold">
+                {questionNumber}
+              </p>
+            </div>
+
+            {/* Timer */}
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                Time Remaining
+              </p>
+
+              <p
+                className={`text-xl font-bold ${
+                  duration <= 60
+                    ? "text-red-500"
+                    : "text-black"
+                }`}
+              >
+                {formattedTime}
+              </p>
+            </div>
+
           </div>
         </div>
 
         {/* Question */}
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
+
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center">
               AI
@@ -165,10 +235,12 @@ const Interview = () => {
           <h2 className="text-xl font-medium leading-relaxed">
             {question}
           </h2>
+
         </div>
 
         {/* Answer */}
         <div className="bg-white rounded-2xl shadow-sm p-8">
+
           <label className="block font-semibold mb-3">
             Your Answer
           </label>
@@ -189,6 +261,7 @@ const Interview = () => {
           )}
 
           <div className="flex justify-between items-center mt-5">
+
             <button
               onClick={handleCompleteInterview}
               disabled={submitting}
@@ -199,14 +272,16 @@ const Interview = () => {
 
             <button
               onClick={handleSubmitAnswer}
-              disabled={submitting}
+              disabled={submitting || duration <= 0}
               className="bg-black text-white px-7 py-3 rounded-lg font-semibold disabled:opacity-50"
             >
               {submitting
                 ? "AI is evaluating..."
                 : "Submit Answer"}
             </button>
+
           </div>
+
         </div>
 
       </div>

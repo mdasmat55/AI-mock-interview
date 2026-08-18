@@ -2,15 +2,46 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import InterviewSetup from "./pages/interview/InterviewSetup";
 import Interview from "./pages/interview/Interview";
+import InterviewReport from "./pages/interview/InterviewReport";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         <Route
           path="/"
-          element={<h1>AI Interview Platform</h1>}
+          element={
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="text-center">
+                <h1 className="text-4xl font-bold">
+                  AI Interview Platform
+                </h1>
+
+                <p className="text-gray-500 mt-2">
+                  Practice interviews with AI
+                </p>
+              </div>
+            </div>
+          }
         />
+
+        {/* Authentication */}
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        {/* Interview */}
 
         <Route
           path="/interview/setup"
@@ -21,6 +52,12 @@ function App() {
           path="/interview/:interviewId/start"
           element={<Interview />}
         />
+
+        <Route
+          path="/interview/:interviewId/report"
+          element={<InterviewReport />}
+        />
+
       </Routes>
     </BrowserRouter>
   );
