@@ -9,6 +9,7 @@ const {
   startInterview,
   submitAnswer,
   completeInterview,
+  deleteInterview,
 } = require("../controllers/interview.controller");
 
 const router = express.Router();
@@ -24,5 +25,7 @@ router.post("/:id/start", protect, startInterview);
 router.post("/:id/answer", protect, submitAnswer);
 
 router.post("/:id/complete", protect, completeInterview);
+
+router.delete("/:id", protect, deleteInterview);
 
 module.exports = router;

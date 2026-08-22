@@ -110,9 +110,12 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              minLength={6}
               className="w-full border rounded-lg px-4 py-3"
               placeholder="Create a password"
             />
+
+            <p className="text-xs text-gray-400 mt-1">At least 6 characters.</p>
           </div>
 
           <div>

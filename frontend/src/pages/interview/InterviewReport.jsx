@@ -5,6 +5,7 @@ import Navbar from "../../components/Navbar";
 import {
   generateReport,
   getInterviewById,
+  deleteInterview,
 } from "../../services/interview.service";
 
 const InterviewReport = () => {
@@ -16,6 +17,9 @@ const InterviewReport = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     const loadReport = async () => {
@@ -36,6 +40,24 @@ const InterviewReport = () => {
 
     loadReport();
   }, [interviewId]);
+
+
+  const handleDeleteInterview = async () => {
+    try {
+      setDeleting(true);
+
+      await deleteInterview(interviewId);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      setError(error.response?.data?.message || "Failed to delete interview");
+
+      setDeleting(false);
+      setShowDeleteConfirmation(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -294,17 +316,57 @@ const InterviewReport = () => {
             </div>
 
             {/* Action */}
-            <div className="text-center">
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
               <button
                 onClick={() => navigate("/interview/setup")}
                 className="bg-black text-white px-8 py-3 rounded-lg font-semibold"
               >
                 Start Another Interview
               </button>
+
+              <button
+                onClick={() => setShowDeleteConfirmation(true)}
+                disabled={deleting}
+                className="border border-red-500 text-red-500 px-8 py-3 rounded-lg font-semibold hover:bg-red-50 disabled:opacity-50"
+              >
+                Delete Interview
+              </button>
             </div>
           </div>
         </div>
       </main>
+
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+            <h2 className="text-xl font-bold">Delete Interview?</h2>
+
+            <p className="text-gray-500 mt-3">
+              This will permanently delete this interview and its report. This
+              action cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowDeleteConfirmation(false)}
+                disabled={deleting}
+                className="border border-gray-300 px-5 py-2.5 rounded-lg"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleDeleteInterview}
+                disabled={deleting}
+                className="bg-red-500 text-white px-5 py-2.5 rounded-lg font-medium disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Delete Interview"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 };

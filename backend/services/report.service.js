@@ -4,7 +4,60 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+const useMockAI = process.env.GEMINI_MODE === "mock";
+
+// --------------------------------------------------
+// MOCK REPORT
+// --------------------------------------------------
+// Builds a deterministic report from the per-question evaluations already
+// stored on the interview, instead of calling the Gemini API. Keeps mock
+// mode fully self-contained (no API key needed) and keeps the report's
+// overallScore consistent with the question-level mock evaluations.
+
+const average = (values) => {
+  if (values.length === 0) return 0;
+  const sum = values.reduce((total, value) => total + (value || 0), 0);
+  return Math.round((sum / values.length) * 10);
+};
+
+const generateMockReport = (interview) => {
+  const answered = interview.questions.filter(
+    (q) => q.userAnswer?.trim() !== "",
+  );
+
+  const evaluations = answered.map((q) => q.evaluation || {});
+
+  return {
+    overallScore: average(evaluations.map((e) => e.overall)),
+    technicalScore: average(evaluations.map((e) => e.technicalDepth)),
+    problemSolvingScore: average(evaluations.map((e) => e.correctness)),
+    clarityScore: average(evaluations.map((e) => e.clarity)),
+    completenessScore: average(evaluations.map((e) => e.completeness)),
+    strengths: [
+      "Attempted every question asked during the interview.",
+      "Answers stayed relevant to the questions asked.",
+    ],
+    weaknesses: [
+      "This is a mock report generated for development and testing.",
+      "Enable live Gemini mode for a real AI-generated assessment.",
+    ],
+    recommendations: [
+      "Review the question-by-question feedback below.",
+      "Practice explaining answers with more technical depth.",
+      "Try another mock interview to track improvement over time.",
+    ],
+    summary:
+      "This is a mock report used for development and testing (GEMINI_MODE=mock). Scores are derived directly from the per-question mock evaluations.",
+  };
+};
+
 const generateInterviewReport = async (interview) => {
+  // MOCK MODE
+  if (useMockAI) {
+    return generateMockReport(interview);
+  }
+
+  // GEMINI MODE
   const questions = interview.questions
     .filter((q) => q.userAnswer.trim() !== "")
     .map((q, index) => {

@@ -3,6 +3,37 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 const generateToken = require("../utils/jwt");
 
+// Mongoose validation errors (e.g. password shorter than minlength) and
+// duplicate-key errors (e.g. email unique index) are the user's fault, not
+// the server's — they should come back as 400s with a useful message
+// instead of a generic 500 "Server error".
+const handleAuthError = (res, error, fallbackMessage) => {
+  console.error(fallbackMessage, error);
+
+  if (error.name === "ValidationError") {
+    const message = Object.values(error.errors)
+      .map((fieldError) => fieldError.message)
+      .join(" ");
+
+    return res.status(400).json({
+      success: false,
+      message: message || "Invalid input.",
+    });
+  }
+
+  if (error.code === 11000) {
+    return res.status(400).json({
+      success: false,
+      message: "An account with this email already exists.",
+    });
+  }
+
+  res.status(500).json({
+    success: false,
+    message: fallbackMessage,
+  });
+};
+
 const register = async (req, res) => {
   try {
     const { name, email, password, skills, targetRole, education } = req.body;
@@ -50,12 +81,7 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Register error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    handleAuthError(res, error, "Server error");
   }
 };
 
@@ -104,12 +130,7 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    handleAuthError(res, error, "Server error");
   }
 };
 
@@ -146,12 +167,7 @@ const updateProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Update profile error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to update profile",
-    });
+    handleAuthError(res, error, "Failed to update profile");
   }
 };
 

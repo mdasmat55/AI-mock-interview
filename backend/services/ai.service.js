@@ -67,10 +67,11 @@ const generateFirstQuestion = async ({
   interviewType,
   difficulty,
   topics,
+  previousQuestions = [],
 }) => {
   // MOCK MODE
   if (useMockAI) {
-    return getMockQuestion(topics);
+    return getMockQuestion(topics, previousQuestions);
   }
 
   // GEMINI MODE
@@ -85,13 +86,24 @@ Topics: ${topics.join(", ")}
 
 Generate the FIRST interview question for this candidate.
 
+Previous questions asked to this candidate in earlier interviews:
+${
+  previousQuestions.length > 0
+    ? previousQuestions.map((q, index) => `${index + 1}. ${q}`).join("\n")
+    : "None"
+}
+
 Rules:
-- Ask only one question.
+- Ask exactly ONE question.
 - Do not provide the answer.
 - Do not provide explanations.
 - Keep the question relevant to the role.
 - Match the requested difficulty.
 - Make it suitable for an actual interview.
+- DO NOT repeat or closely rephrase any question from the previous questions list.
+- Choose a different concept or problem whenever possible.
+- Avoid repeatedly asking common introductory questions.
+- Return only the question text.
 
 Return only the question text.
 `;
@@ -102,7 +114,7 @@ Return only the question text.
   });
 
   return response.text.trim();
-};
+};;
 
 // --------------------------------------------------
 // MOCK EVALUATION

@@ -246,7 +246,9 @@ const InterviewCard = ({ interview, navigate }) => {
         </div>
 
         {/* Score + Action */}
+        {/* Score + Action */}
         <div className="flex items-center gap-6">
+          {/* Score */}
           {isCompleted && (
             <div className="text-center min-w-22.5">
               <p className="text-sm text-gray-500">Score</p>
@@ -268,6 +270,27 @@ const InterviewCard = ({ interview, navigate }) => {
             </div>
           )}
 
+          {/* Created */}
+          {interview.status === "created" && (
+            <button
+              onClick={() => navigate(`/interview/${interview._id}/start`)}
+              className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition"
+            >
+              Start Interview
+            </button>
+          )}
+
+          {/* In Progress */}
+          {interview.status === "in-progress" && (
+            <button
+              onClick={() => navigate(`/interview/${interview._id}/start`)}
+              className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition"
+            >
+              Continue Interview
+            </button>
+          )}
+
+          {/* Completed */}
           {isCompleted && (
             <button
               onClick={() => navigate(`/interview/${interview._id}/report`)}
@@ -276,6 +299,7 @@ const InterviewCard = ({ interview, navigate }) => {
               View Report
             </button>
           )}
+          
         </div>
       </div>
     </div>
