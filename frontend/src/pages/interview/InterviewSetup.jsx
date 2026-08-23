@@ -14,6 +14,7 @@ const InterviewSetup = () => {
     difficulty: "medium",
     topics: "",
     duration: 20,
+    totalQuestions: 10,
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,7 @@ const InterviewSetup = () => {
           .map((topic) => topic.trim())
           .filter(Boolean),
         duration: Number(formData.duration),
+        totalQuestions: Number(formData.totalQuestions),
       };
 
       const result = await createInterview(data);
@@ -57,129 +59,293 @@ const InterviewSetup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="min-h-[calc(100vh-73px)] flex items-center justify-center px-4 py-8">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-2xl bg-white rounded-2xl shadow-md p-8"
-        >
-          <h1 className="text-3xl font-bold mb-2">Start AI Interview</h1>
+      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* =====================================================
+            HEADER
+        ====================================================== */}
 
-          <p className="text-gray-500 mb-8">
-            Configure your interview before starting.
+        <div className="mb-6">
+          <p className="text-sm font-semibold tracking-wide text-violet-600">
+            INTERVIEW SETUP
           </p>
 
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Start AI Interview
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-500 sm:text-base">
+            Customize your interview before you begin.
+          </p>
+        </div>
+
+        {/* =====================================================
+            FORM CARD
+        ====================================================== */}
+
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"
+        >
+          {/* Intro */}
+
+          <div className="mb-6 flex items-start gap-3 rounded-xl bg-violet-50 p-4">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-sm text-violet-600">
+              🤖
+            </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-900">
+                Configure your AI interview
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                Choose the role, interview style, difficulty, topics, and
+                duration that match your preparation goals.
+              </p>
+            </div>
+          </div>
+
+          {/* Error */}
+
           {error && (
-            <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-5">
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
 
           <div className="space-y-5">
-            <div>
-              <label className="block font-medium mb-2">Target Role</label>
+            {/* =================================================
+                ROLE + EXPERIENCE
+            ================================================== */}
 
-              <input
+            <div className="grid gap-5 sm:grid-cols-2">
+              <SelectOrInput
+                label="Target Role"
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-3"
                 placeholder="Software Developer"
               />
-            </div>
 
-            <div>
-              <label className="block font-medium mb-2">Experience</label>
-
-              <select
+              <SelectField
+                label="Experience"
                 name="experience"
                 value={formData.experience}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-3"
-              >
-                <option value="Fresher">Fresher</option>
-                <option value="0-1 years">0-1 years</option>
-                <option value="1-3 years">1-3 years</option>
-                <option value="3+ years">3+ years</option>
-              </select>
+                options={[
+                  ["Fresher", "Fresher"],
+                  ["0-1 years", "0-1 years"],
+                  ["1-3 years", "1-3 years"],
+                  ["3+ years", "3+ years"],
+                ]}
+              />
             </div>
 
-            <div>
-              <label className="block font-medium mb-2">Interview Type</label>
+            {/* =================================================
+                INTERVIEW TYPE + DIFFICULTY
+            ================================================== */}
 
-              <select
+            <div className="grid gap-5 sm:grid-cols-2">
+              <SelectField
+                label="Interview Type"
                 name="interviewType"
                 value={formData.interviewType}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-3"
-              >
-                <option value="technical">Technical</option>
-                <option value="hr">HR</option>
-                <option value="behavioral">Behavioral</option>
-                <option value="coding">Coding</option>
-                <option value="mixed">Mixed</option>
-              </select>
-            </div>
+                options={[
+                  ["technical", "Technical"],
+                  ["hr", "HR"],
+                  ["behavioral", "Behavioral"],
+                  ["coding", "Coding"],
+                  ["mixed", "Mixed"],
+                ]}
+              />
 
-            <div>
-              <label className="block font-medium mb-2">Difficulty</label>
-
-              <select
+              <SelectField
+                label="Difficulty"
                 name="difficulty"
                 value={formData.difficulty}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-3"
-              >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
+                options={[
+                  ["easy", "Easy"],
+                  ["medium", "Medium"],
+                  ["hard", "Hard"],
+                ]}
+              />
             </div>
 
+            {/* =================================================
+                TOPICS
+            ================================================== */}
+
             <div>
-              <label className="block font-medium mb-2">Topics</label>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+                Topics
+              </label>
 
-              <input
-                name="topics"
-                value={formData.topics}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-3"
-                placeholder="DSA, DBMS, OOP, JavaScript"
-              />
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-violet-500">
+                  &lt;/&gt;
+                </span>
 
-              <p className="text-sm text-gray-500 mt-1">
-                Separate topics with commas.
+                <input
+                  name="topics"
+                  value={formData.topics}
+                  onChange={handleChange}
+                  placeholder="DSA, DBMS, OOP, JavaScript"
+                  className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-3 focus:ring-violet-100"
+                />
+              </div>
+
+              <p className="mt-1.5 text-xs text-slate-400">
+                Separate multiple topics with commas.
               </p>
             </div>
 
-            <div>
-              <label className="block font-medium mb-2">Duration</label>
+            {/* =================================================
+                DURATION + QUESTIONS
+            ================================================== */}
 
-              <select
+            <div className="grid gap-5 sm:grid-cols-2">
+              <SelectField
+                label="Duration"
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-3"
-              >
-                <option value="10">10 minutes</option>
-                <option value="20">20 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="45">45 minutes</option>
-              </select>
+                options={[
+                  ["10", "10 minutes"],
+                  ["20", "20 minutes"],
+                  ["30", "30 minutes"],
+                  ["45", "45 minutes"],
+                ]}
+              />
+
+              <SelectField
+                label="Number of Questions"
+                name="totalQuestions"
+                value={formData.totalQuestions}
+                onChange={handleChange}
+                options={[
+                  ["5", "5 questions"],
+                  ["10", "10 questions"],
+                  ["15", "15 questions"],
+                  ["20", "20 questions"],
+                ]}
+              />
             </div>
+
+            {/* =================================================
+                SUMMARY
+            ================================================== */}
+
+            <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Interview Summary
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <SummaryItem label="Role" value={formData.role} />
+
+                <SummaryItem label="Type" value={formData.interviewType} />
+
+                <SummaryItem label="Difficulty" value={formData.difficulty} />
+
+                <SummaryItem
+                  label="Duration"
+                  value={`${formData.duration} min`}
+                />
+              </div>
+            </div>
+
+            {/* =================================================
+                BUTTON
+            ================================================== */}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
+              className="w-full rounded-xl bg-violet-600 py-3.5 text-sm font-semibold text-white shadow-md shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Creating Interview..." : "Start AI Interview"}
+              {loading ? "Creating Interview..." : "Start AI Interview →"}
             </button>
           </div>
         </form>
       </main>
+    </div>
+  );
+};
+
+/* =============================================================
+   INPUT FIELD
+============================================================= */
+
+const SelectOrInput = ({ label, name, value, onChange, placeholder }) => {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        {label}
+      </label>
+
+      <div className="relative">
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm">
+          💼
+        </span>
+
+        <input
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-3 focus:ring-violet-100"
+        />
+      </div>
+    </div>
+  );
+};
+
+/* =============================================================
+   SELECT FIELD
+============================================================= */
+
+const SelectField = ({ label, name, value, onChange, options }) => {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        {label}
+      </label>
+
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-violet-500 focus:ring-3 focus:ring-violet-100"
+      >
+        {options.map(([optionValue, optionLabel]) => (
+          <option key={optionValue} value={optionValue}>
+            {optionLabel}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+/* =============================================================
+   SUMMARY ITEM
+============================================================= */
+
+const SummaryItem = ({ label, value }) => {
+  return (
+    <div>
+      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+
+      <p className="mt-1 truncate text-sm font-semibold capitalize text-slate-700">
+        {value}
+      </p>
     </div>
   );
 };

@@ -33,53 +33,74 @@ const createReport = async (req, res) => {
       question.userAnswer?.trim(),
     );
 
-    if (answeredQuestions.length === 0) {
-      const existingReport = await Report.findOne({
-        interview: interview._id,
-      });
+        if (answeredQuestions.length === 0) {
+          const existingReport = await Report.findOne({
+            interview: interview._id,
+          });
 
-      if (existingReport) {
-        if (interview.score !== existingReport.overallScore) {
-          interview.score = existingReport.overallScore;
+          if (existingReport) {
+            if (interview.score !== existingReport.overallScore) {
+              interview.score = existingReport.overallScore;
+              await interview.save();
+            }
+
+            return res.status(200).json({
+              success: true,
+              message: "Report already exists",
+              report: existingReport,
+            });
+          }
+
+          let report;
+
+          try {
+            report = await Report.create({
+              interview: interview._id,
+              user: req.user._id,
+
+              overallScore: 0,
+              technicalScore: 0,
+              problemSolvingScore: 0,
+              clarityScore: 0,
+              completenessScore: 0,
+
+              strengths: [],
+              weaknesses: ["No questions were answered."],
+              recommendations: [
+                "Attempt the interview questions to receive a meaningful performance evaluation.",
+              ],
+
+              summary:
+                "The interview was completed without answering any questions, so no performance evaluation is available.",
+            });
+          } catch (error) {
+            // A second, near-simultaneous request (e.g. React StrictMode's
+            // double effect-invocation in dev) may have created the report
+            // a moment earlier. Return that one instead of crashing.
+            if (error.code === 11000) {
+              const raceReport = await Report.findOne({
+                interview: interview._id,
+              });
+
+              return res.status(200).json({
+                success: true,
+                message: "Report already exists",
+                report: raceReport,
+              });
+            }
+
+            throw error;
+          }
+
+          interview.score = 0;
           await interview.save();
+
+          return res.status(201).json({
+            success: true,
+            message: "Interview report generated successfully",
+            report,
+          });
         }
-
-        return res.status(200).json({
-          success: true,
-          message: "Report already exists",
-          report: existingReport,
-        });
-      }
-
-      const report = await Report.create({
-        interview: interview._id,
-        user: req.user._id,
-
-        overallScore: 0,
-        technicalScore: 0,
-        problemSolvingScore: 0,
-        clarityScore: 0,
-        completenessScore: 0,
-
-        strengths: [],
-        weaknesses: ["No questions were answered."],
-        recommendations: [
-          "Attempt the interview questions to receive a meaningful performance evaluation.",
-        ],
-
-        summary:
-          "The interview was completed without answering any questions, so no performance evaluation is available.",
-      });
-
-      interview.score = 0;
-      await interview.save();
-
-      return res.status(201).json({
-        success: true,
-        message: "Interview report generated successfully",
-        report,
-      });
-    }
 
     const existingReport = await Report.findOne({
       interview: interview._id,

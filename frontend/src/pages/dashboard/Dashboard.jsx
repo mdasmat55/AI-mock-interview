@@ -55,119 +55,157 @@ const Dashboard = () => {
       : 0;
 
   return (
-     <div className="min-h-screen bg-gray-100">
-
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        {/* Welcome */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold">Welcome back, {user?.name} 👋</h2>
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* =====================================================
+            WELCOME SECTION
+        ====================================================== */}
 
-          <p className="text-gray-500 mt-2">
-            Practice interviews and improve your skills.
-          </p>
-        </div>
-
-        {/* Start Interview */}
-        <div className="bg-black text-white rounded-2xl p-8 mb-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <section className="mb-7">
+          <div className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white px-6 py-6 shadow-sm sm:px-8 sm:py-7 md:flex-row md:items-center md:justify-between">
             <div>
-              <h3 className="text-2xl font-bold">
-                Ready for your next interview?
-              </h3>
+              <p className="mb-1 text-sm font-semibold text-violet-600">
+                DASHBOARD
+              </p>
 
-              <p className="text-gray-300 mt-2">
-                Practice with an AI interviewer tailored to your role.
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Welcome back, {user?.name || "there"} 👋
+              </h1>
+
+              <p className="mt-2 text-sm text-slate-500 sm:text-base">
+                Keep practicing and improve your interview performance.
               </p>
             </div>
 
             <button
               onClick={() => navigate("/interview/setup")}
-              className="bg-white text-black px-6 py-3 rounded-lg font-semibold"
+              className="w-full rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-violet-200 transition hover:bg-violet-700 sm:w-auto"
             >
-              Start Interview
+              + Start Interview
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-500 text-sm">Total Interviews</p>
+        {/* =====================================================
+            STATISTICS
+        ====================================================== */}
 
-            <p className="text-3xl font-bold mt-2">{totalInterviews}</p>
+        <section className="mb-8">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard
+              label="Total Interviews"
+              value={totalInterviews}
+              icon="▣"
+              accent="violet"
+            />
+
+            <StatCard
+              label="Completed"
+              value={completedInterviews.length}
+              icon="✓"
+              accent="green"
+            />
+
+            <StatCard
+              label="Average Score"
+              value={averageScore}
+              suffix="/100"
+              icon="↗"
+              accent="blue"
+            />
+
+            <StatCard
+              label="Best Score"
+              value={bestScore}
+              suffix="/100"
+              icon="★"
+              accent="amber"
+            />
           </div>
+        </section>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-500 text-sm">Completed</p>
+        {/* =====================================================
+            PREVIOUS INTERVIEWS HEADER
+        ====================================================== */}
 
-            <p className="text-3xl font-bold mt-2">
-              {completedInterviews.length}
-            </p>
-          </div>
+        <section>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">
+                Previous Interviews
+              </h2>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-500 text-sm">Average Score</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Review your previous interview attempts.
+              </p>
+            </div>
 
-            <p className="text-3xl font-bold mt-2">
-              {averageScore}
-              <span className="text-base text-gray-400">/100</span>
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-500 text-sm">Best Score</p>
-
-            <p className="text-3xl font-bold mt-2">
-              {bestScore}
-              <span className="text-base text-gray-400">/100</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Previous Interviews */}
-        <div>
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-2xl font-bold">Previous Interviews</h3>
-
-            <span className="text-gray-500">
-              {interviews.length} interview
-              {interviews.length !== 1 ? "s" : ""}
+            <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 sm:block">
+              {interviews.length}{" "}
+              {interviews.length === 1 ? "interview" : "interviews"}
             </span>
           </div>
 
+          {/* =====================================================
+              LOADING
+          ====================================================== */}
+
           {loading && (
-            <div className="bg-white rounded-xl p-8 text-center">
-              Loading interviews...
+            <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+
+              <p className="text-sm text-slate-500">
+                Loading your interviews...
+              </p>
             </div>
           )}
 
+          {/* =====================================================
+              ERROR
+          ====================================================== */}
+
           {error && (
-            <div className="bg-red-100 text-red-600 rounded-xl p-4">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-600">
               {error}
             </div>
           )}
 
-          {!loading && !error && interviews.length === 0 && (
-            <div className="bg-white rounded-2xl p-10 text-center">
-              <h4 className="text-xl font-semibold">No interviews yet</h4>
+          {/* =====================================================
+              EMPTY STATE
+          ====================================================== */}
 
-              <p className="text-gray-500 mt-2">
-                Start your first AI interview to see it here.
+          {!loading && !error && interviews.length === 0 && (
+            <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-2xl text-violet-600">
+                🤖
+              </div>
+
+              <h3 className="mt-5 text-xl font-bold text-slate-900">
+                No interviews yet
+              </h3>
+
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                Start your first AI interview and begin tracking your
+                preparation progress.
               </p>
 
               <button
                 onClick={() => navigate("/interview/setup")}
-                className="bg-black text-white px-6 py-3 rounded-lg mt-5"
+                className="mt-6 rounded-xl bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-violet-200 transition hover:bg-violet-700"
               >
                 Start Your First Interview
               </button>
             </div>
           )}
 
+          {/* =====================================================
+              INTERVIEW LIST
+          ====================================================== */}
+
           {!loading && !error && interviews.length > 0 && (
-            <div className="grid gap-4">
+            <div className="space-y-4">
               {interviews.map((interview) => (
                 <InterviewCard
                   key={interview._id}
@@ -177,12 +215,74 @@ const Dashboard = () => {
               ))}
             </div>
           )}
-        </div>
+        </section>
       </main>
-
     </div>
   );
 };
+
+/* =============================================================
+   STAT CARD
+============================================================= */
+
+const StatCard = ({ label, value, suffix, icon, accent }) => {
+  const accentStyles = {
+    violet: {
+      icon: "bg-violet-100 text-violet-600",
+      border: "hover:border-violet-200",
+    },
+
+    green: {
+      icon: "bg-emerald-100 text-emerald-600",
+      border: "hover:border-emerald-200",
+    },
+
+    blue: {
+      icon: "bg-blue-100 text-blue-600",
+      border: "hover:border-blue-200",
+    },
+
+    amber: {
+      icon: "bg-amber-100 text-amber-600",
+      border: "hover:border-amber-200",
+    },
+  };
+
+  const style = accentStyles[accent];
+
+  return (
+    <div
+      className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition ${style.border}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-medium text-slate-500 sm:text-sm">
+            {label}
+          </p>
+
+          <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            {value}
+            {suffix && (
+              <span className="ml-1 text-sm font-medium text-slate-400">
+                {suffix}
+              </span>
+            )}
+          </p>
+        </div>
+
+        <div
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${style.icon}`}
+        >
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* =============================================================
+   INTERVIEW CARD
+============================================================= */
 
 const InterviewCard = ({ interview, navigate }) => {
   const isCompleted = interview.status === "completed";
@@ -197,109 +297,134 @@ const InterviewCard = ({ interview, navigate }) => {
 
   const score = interview.score || 0;
 
-  return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        {/* Interview Information */}
-        <div className="flex-1">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h4 className="text-xl font-bold">{interview.role}</h4>
+  /* Status styles */
 
-              <p className="text-gray-500 mt-1 capitalize">
-                {interview.interviewType} • {interview.difficulty}
+  const statusStyles = {
+    completed: "bg-emerald-50 text-emerald-700 border-emerald-100",
+
+    "in-progress": "bg-amber-50 text-amber-700 border-amber-100",
+
+    created: "bg-slate-100 text-slate-600 border-slate-200",
+  };
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-violet-200 hover:shadow-md sm:p-6">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        {/* =====================================================
+            INTERVIEW INFORMATION
+        ====================================================== */}
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h3 className="truncate text-lg font-bold text-slate-900 sm:text-xl">
+                {interview.role}
+              </h3>
+
+              <p className="mt-1 text-sm capitalize text-slate-500">
+                {interview.interviewType}{" "}
+                <span className="text-slate-300">•</span> {interview.difficulty}
               </p>
             </div>
 
             {/* Status */}
+
             <span
-              className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
-                interview.status === "completed"
-                  ? "bg-green-100 text-green-700"
-                  : interview.status === "in-progress"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-gray-100 text-gray-600"
+              className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold capitalize ${
+                statusStyles[interview.status] || statusStyles.created
               }`}
             >
               {interview.status}
             </span>
           </div>
 
-          {/* Topics */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {interview.topics?.map((topic) => (
-              <span
-                key={topic}
-                className="bg-gray-100 px-3 py-1 rounded-full text-sm"
-              >
-                {topic}
-              </span>
-            ))}
-          </div>
+          {/* =================================================
+              TOPICS
+          ================================================== */}
 
-          {/* Date + Duration */}
-          <div className="flex flex-wrap gap-5 mt-4 text-sm text-gray-500">
+          {interview.topics?.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {interview.topics.map((topic) => (
+                <span
+                  key={topic}
+                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
+                >
+                  {topic}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* =================================================
+              DATE + DURATION
+          ================================================== */}
+
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500 sm:text-sm">
             <span>📅 {formattedDate}</span>
 
-            <span>⏱️ {interview.duration} minutes</span>
+            <span>⏱ {interview.duration} minutes</span>
           </div>
         </div>
 
-        {/* Score + Action */}
-        {/* Score + Action */}
-        <div className="flex items-center gap-6">
-          {/* Score */}
-          {isCompleted && (
-            <div className="text-center min-w-22.5">
-              <p className="text-sm text-gray-500">Score</p>
+        {/* =====================================================
+            RIGHT SIDE - SCORE + ACTION
+        ====================================================== */}
 
-              <p className="text-2xl font-bold">
+        <div className="flex items-center justify-between gap-5 border-t border-slate-100 pt-4 lg:border-t-0 lg:pt-0">
+          {/* Score */}
+
+          {isCompleted && (
+            <div className="min-w-[90px]">
+              <p className="text-xs font-medium text-slate-500">Score</p>
+
+              <p className="mt-0.5 text-2xl font-bold text-slate-900">
                 {score}
-                <span className="text-sm text-gray-400">/100</span>
+                <span className="text-sm font-medium text-slate-400">/100</span>
               </p>
 
               {/* Score bar */}
-              <div className="w-20 h-2 bg-gray-200 rounded-full mt-2 overflow-hidden">
+
+              <div className="mt-2 h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full bg-black rounded-full"
+                  className="h-full rounded-full bg-violet-600 transition-all"
                   style={{
-                    width: `${Math.min(score, 100)}%`,
+                    width: `${Math.min(Math.max(score, 0), 100)}%`,
                   }}
                 />
               </div>
             </div>
           )}
 
-          {/* Created */}
+          {/* =================================================
+              ACTION BUTTONS
+          ================================================== */}
+
           {interview.status === "created" && (
             <button
               onClick={() => navigate(`/interview/${interview._id}/start`)}
-              className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition"
+              className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
             >
               Start Interview
             </button>
           )}
 
-          {/* In Progress */}
           {interview.status === "in-progress" && (
             <button
               onClick={() => navigate(`/interview/${interview._id}/start`)}
-              className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition"
+              className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
             >
-              Continue Interview
+              Continue
             </button>
           )}
 
-          {/* Completed */}
           {isCompleted && (
             <button
               onClick={() => navigate(`/interview/${interview._id}/report`)}
-              className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition"
+              className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
             >
               View Report
             </button>
           )}
-          
         </div>
       </div>
     </div>

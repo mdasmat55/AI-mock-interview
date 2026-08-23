@@ -101,6 +101,11 @@ const interviewSchema = new mongoose.Schema(
       type: Number,
       default: 20,
     },
+    
+    totalQuestions: {
+      type: Number,
+      default: 10,
+    },
 
     status: {
       type: String,

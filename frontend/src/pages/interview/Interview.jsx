@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import Navbar from "../../components/Navbar";
 
 import {
@@ -16,20 +17,27 @@ const Interview = () => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
+
   const [duration, setDuration] = useState(20 * 60);
+
   const [interviewInfo, setInterviewInfo] = useState({
     role: "",
     interviewType: "",
   });
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
   const [error, setError] = useState("");
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
+
   const [isListening, setIsListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [voiceMode, setVoiceMode] = useState(false);
+
   const recognitionRef = useRef(null);
   const finalTranscriptRef = useRef("");
+  const hasStartedRef = useRef(false);
 
   const calculateRemainingTime = (startedAt, durationMinutes) => {
     const startTime = new Date(startedAt).getTime();
@@ -41,6 +49,10 @@ const Interview = () => {
 
     return Math.max(totalSeconds - elapsedSeconds, 0);
   };
+
+  /* =========================================================
+     SPEECH RECOGNITION
+  ========================================================== */
 
   useEffect(() => {
     const SpeechRecognition =
@@ -92,7 +104,15 @@ const Interview = () => {
     };
   }, []);
 
+  /* =========================================================
+     LOAD INTERVIEW
+  ========================================================== */
+
   useEffect(() => {
+    if (hasStartedRef.current) return;
+
+    hasStartedRef.current = true;
+
     const loadInterview = async () => {
       try {
         const result = await getInterviewById(interviewId);
@@ -112,6 +132,7 @@ const Interview = () => {
           if (voiceMode) {
             speakQuestion(startResult.question);
           }
+
           setQuestionIndex(0);
 
           if (
@@ -126,7 +147,6 @@ const Interview = () => {
             setDuration(remainingTime);
           }
         } else if (interview.status === "in-progress") {
-          // Resume existing interview
           const currentQuestion =
             interview.questions[interview.currentQuestion];
 
@@ -152,7 +172,6 @@ const Interview = () => {
             setDuration(remainingTime);
           }
         } else if (interview.status === "completed") {
-          // Already completed
           navigate(`/interview/${interviewId}/report`);
         } else {
           setError("Invalid interview status.");
@@ -168,6 +187,10 @@ const Interview = () => {
 
     loadInterview();
   }, [interviewId, navigate]);
+
+  /* =========================================================
+     TIMER
+  ========================================================== */
 
   useEffect(() => {
     if (loading || duration <= 0) {
@@ -191,6 +214,10 @@ const Interview = () => {
     return () => clearInterval(timer);
   }, [loading]);
 
+  /* =========================================================
+     AUTO COMPLETE
+  ========================================================== */
+
   const handleAutoComplete = async () => {
     try {
       await completeInterview(interviewId);
@@ -200,6 +227,10 @@ const Interview = () => {
       console.error("Auto complete error:", error);
     }
   };
+
+  /* =========================================================
+     SUBMIT ANSWER
+  ========================================================== */
 
   const handleSubmitAnswer = async () => {
     if (!answer.trim()) {
@@ -213,14 +244,22 @@ const Interview = () => {
 
       const result = await submitAnswer(interviewId, questionIndex, answer);
 
+      if (result.isComplete) {
+        await completeInterview(interviewId);
+
+        navigate(`/interview/${interviewId}/report`);
+
+        return;
+      }
+
       setQuestion(result.nextQuestion);
       setAnswer("");
+
       setQuestionIndex((prev) => prev + 1);
 
       if (voiceMode) {
         speakQuestion(result.nextQuestion);
       }
-
     } catch (error) {
       console.error(error);
 
@@ -229,6 +268,10 @@ const Interview = () => {
       setSubmitting(false);
     }
   };
+
+  /* =========================================================
+     COMPLETE INTERVIEW
+  ========================================================== */
 
   const handleCompleteInterview = async () => {
     try {
@@ -247,6 +290,10 @@ const Interview = () => {
     }
   };
 
+  /* =========================================================
+     TEXT TO SPEECH
+  ========================================================== */
+
   const speakQuestion = (text) => {
     if (!text || !("speechSynthesis" in window)) {
       return;
@@ -263,9 +310,17 @@ const Interview = () => {
     window.speechSynthesis.speak(utterance);
   };
 
+  /* =========================================================
+     SAVE & EXIT
+  ========================================================== */
+
   const handleSaveAndExit = () => {
     navigate("/dashboard");
   };
+
+  /* =========================================================
+     VOICE INPUT
+  ========================================================== */
 
   const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
@@ -277,11 +332,14 @@ const Interview = () => {
 
     if (isListening) {
       recognitionRef.current.stop();
+
       setIsListening(false);
     } else {
       try {
         finalTranscriptRef.current = answer;
+
         recognitionRef.current.start();
+
         setIsListening(true);
       } catch (error) {
         console.error("Voice start error:", error);
@@ -289,70 +347,131 @@ const Interview = () => {
     }
   };
 
+  /* =========================================================
+     TIMER FORMAT
+  ========================================================== */
+
   const minutes = Math.floor(duration / 60);
+
   const seconds = duration % 60;
 
-  const formattedTime = `${String(minutes).padStart(
-    2,
-    "0",
-  )}:${String(seconds).padStart(2, "0")}`;
+  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
+    seconds,
+  ).padStart(2, "0")}`;
+
+  /* =========================================================
+     LOADING
+  ========================================================== */
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">AI is preparing your interview...</p>
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+
+            <p className="text-sm font-medium text-slate-600">
+              AI is preparing your interview...
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
+  /* =========================================================
+     ERROR
+  ========================================================== */
+
   if (error && !question) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">{error}</p>
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
 
-          <button
-            onClick={() => navigate("/interview/setup")}
-            className="bg-black text-white px-5 py-2 rounded-lg"
-          >
-            Back to Setup
-          </button>
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-7 text-center shadow-sm">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
+              !
+            </div>
+
+            <p className="mt-4 text-sm font-medium text-red-600">{error}</p>
+
+            <button
+              onClick={() => navigate("/interview/setup")}
+              className="mt-5 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            >
+              Back to Setup
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-5 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">AI Interview</p>
+      <main className="mx-auto max-w-5xl px-4 py-5 sm:px-6 lg:px-8">
+        {/* ===================================================
+            INTERVIEW HEADER
+        ==================================================== */}
 
-              <h1 className="text-2xl font-bold">
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            {/* Interview information */}
+
+            <div className="min-w-0">
+              <p className="text-xs font-semibold tracking-wide text-violet-600">
+                AI INTERVIEW
+              </p>
+
+              <h1 className="mt-1 truncate text-xl font-bold text-slate-900 sm:text-2xl">
                 {interviewInfo.role || "Interview"}
               </h1>
+
+              <p className="mt-1 text-xs capitalize text-slate-500 sm:text-sm">
+                {interviewInfo.interviewType
+                  ? `${interviewInfo.interviewType} interview`
+                  : "Interview session"}
+              </p>
             </div>
 
-            <div className="flex items-center gap-8">
-              {/* Question number */}
-              <div className="text-center">
-                <p className="text-sm text-gray-500">Question</p>
+            {/* Question + Timer */}
 
-                <p className="text-xl font-semibold">{questionIndex + 1}</p>
+            <div className="flex items-center gap-3">
+              {/* Question */}
+
+              <div className="rounded-xl bg-slate-50 px-4 py-2.5 text-center">
+                <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                  Question
+                </p>
+
+                <p className="mt-0.5 text-lg font-bold text-slate-900">
+                  {questionIndex + 1}
+                </p>
               </div>
 
               {/* Timer */}
-              <div className="text-center">
-                <p className="text-sm text-gray-500">Time Remaining</p>
+
+              <div
+                className={`rounded-xl px-4 py-2.5 text-center ${
+                  duration <= 60 ? "bg-red-50" : "bg-violet-50"
+                }`}
+              >
+                <p
+                  className={`text-[10px] font-medium uppercase tracking-wide ${
+                    duration <= 60 ? "text-red-500" : "text-violet-500"
+                  }`}
+                >
+                  Time Remaining
+                </p>
 
                 <p
-                  className={`text-xl font-bold ${
-                    duration <= 60 ? "text-red-500" : "text-black"
+                  className={`mt-0.5 text-lg font-bold ${
+                    duration <= 60 ? "text-red-600" : "text-violet-700"
                   }`}
                 >
                   {formattedTime}
@@ -360,153 +479,218 @@ const Interview = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Question */}
-          <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center">
-                AI
-              </div>
+        {/* ===================================================
+            QUESTION CARD
+        ==================================================== */}
 
-              <div>
-                <p className="font-semibold">AI Interviewer</p>
-
-                <p className="text-sm text-gray-500 capitalize">
-                  {interviewInfo.interviewType
-                    ? `${interviewInfo.interviewType} Interview`
-                    : "Interview"}
-                </p>
-              </div>
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-sm font-bold text-violet-600">
+              AI
             </div>
 
-            <h2 className="text-xl font-medium leading-relaxed">{question}</h2>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">
+                AI Interviewer
+              </p>
+
+              <p className="text-xs capitalize text-slate-500">
+                {interviewInfo.interviewType
+                  ? `${interviewInfo.interviewType} Interview`
+                  : "Interview"}
+              </p>
+            </div>
           </div>
 
-          {/* Answer */}
-          <div className="bg-white rounded-2xl shadow-sm p-8">
-            <label className="block font-semibold mb-3">Your Answer</label>
+          <div className="rounded-xl bg-violet-50/60 p-5 sm:p-6">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-violet-500">
+              Interview Question
+            </p>
 
-            <textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Type your answer here..."
-              rows={8}
+            <h2 className="text-lg font-medium leading-7 text-slate-900 sm:text-xl sm:leading-8">
+              {question}
+            </h2>
+          </div>
+        </div>
+
+        {/* ===================================================
+            ANSWER CARD
+        ==================================================== */}
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="mb-3 flex items-center justify-between">
+            <label className="text-sm font-semibold text-slate-800">
+              Your Answer
+            </label>
+
+            <span className="text-xs text-slate-400">
+              {voiceMode ? "Voice mode enabled" : "Type your response"}
+            </span>
+          </div>
+
+          {/* Textarea */}
+
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Type your answer here..."
+            rows={7}
+            disabled={submitting}
+            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-3 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+          />
+
+          {/* =================================================
+              VOICE MODE BUTTON
+          ================================================== */}
+
+          {!voiceMode && (
+            <button
+              type="button"
+              onClick={() => {
+                setVoiceMode(true);
+                speakQuestion(question);
+              }}
               disabled={submitting}
-              className="w-full border border-gray-300 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-black"
-            />
+              className="mt-3 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+            >
+              🎙️ Enter Voice Mode
+            </button>
+          )}
 
-            {!voiceMode && (
-              <button
-                type="button"
-                onClick={() => {
-                  setVoiceMode(true);
-                  speakQuestion(question);
-                }}
-                disabled={submitting}
-                className="mt-3 bg-black text-white px-5 py-2.5 rounded-lg font-medium"
-              >
-                🎙️ Enter Voice Mode
-              </button>
-            )}
+          {/* =================================================
+              VOICE MODE PANEL
+          ================================================== */}
 
-            {voiceMode && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-xl border">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <p className="font-semibold">Voice Interview Mode</p>
+          {voiceMode && (
+            <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50 p-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    Voice Interview Mode
+                  </p>
 
-                    <p className="text-sm text-gray-500">
-                      Speak your answer using your microphone.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (isListening) {
-                        recognitionRef.current?.stop();
-                      }
-
-                      setVoiceMode(false);
-                      setIsListening(false);
-                      window.speechSynthesis.cancel();
-                    }}
-                    className="text-sm text-gray-600 border px-3 py-2 rounded-lg"
-                  >
-                    Exit Voice Mode
-                  </button>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    Speak your answer using your microphone.
+                  </p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={toggleVoiceInput}
-                  disabled={submitting}
-                  className={`px-5 py-2.5 rounded-lg font-medium ${
-                    isListening
-                      ? "bg-red-500 text-white"
-                      : "bg-black text-white"
-                  }`}
+                  onClick={() => {
+                    if (isListening) {
+                      recognitionRef.current?.stop();
+                    }
+
+                    setVoiceMode(false);
+                    setIsListening(false);
+
+                    window.speechSynthesis.cancel();
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
                 >
-                  {isListening ? "🛑 Stop Listening" : "🎙️ Start Speaking"}
-                </button>
-
-                {isListening && (
-                  <p className="text-sm text-red-500 mt-2">Listening...</p>
-                )}
-              </div>
-            )}
-
-            {voiceError && (
-              <p className="text-red-500 text-sm mt-2">{voiceError}</p>
-            )}
-
-            {error && <p className="text-red-500 mt-3">{error}</p>}
-
-            <div className="flex justify-between items-center mt-5">
-              <div className="flex gap-3">
-                <button
-                  onClick={handleSaveAndExit}
-                  disabled={submitting}
-                  className="border border-gray-300 text-gray-700 px-5 py-3 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Save & Exit
-                </button>
-
-                <button
-                  onClick={() => setShowEndConfirmation(true)}
-                  disabled={submitting}
-                  className="border border-red-500 text-red-500 px-5 py-3 rounded-lg font-medium disabled:opacity-50"
-                >
-                  End Interview
+                  Exit Voice Mode
                 </button>
               </div>
 
               <button
-                onClick={handleSubmitAnswer}
-                disabled={submitting || duration <= 0}
-                className="bg-black text-white px-7 py-3 rounded-lg font-semibold disabled:opacity-50"
+                type="button"
+                onClick={toggleVoiceInput}
+                disabled={submitting}
+                className={`mt-4 rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
+                  isListening
+                    ? "bg-red-500 text-white hover:bg-red-600"
+                    : "bg-violet-600 text-white hover:bg-violet-700"
+                }`}
               >
-                {submitting ? "AI is evaluating..." : "Submit Answer"}
+                {isListening ? "🛑 Stop Listening" : "🎙️ Start Speaking"}
+              </button>
+
+              {isListening && (
+                <p className="mt-2 text-xs font-medium text-red-500">
+                  ● Listening...
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Voice error */}
+
+          {voiceError && (
+            <p className="mt-2 text-xs text-red-500">{voiceError}</p>
+          )}
+
+          {/* General error */}
+
+          {error && (
+            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">
+              {error}
+            </p>
+          )}
+
+          {/* =================================================
+              ACTIONS
+          ================================================== */}
+
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {/* Secondary actions */}
+
+            <div className="flex gap-2">
+              <button
+                onClick={handleSaveAndExit}
+                disabled={submitting}
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                Save & Exit
+              </button>
+
+              <button
+                onClick={() => setShowEndConfirmation(true)}
+                disabled={submitting}
+                className="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50 disabled:opacity-50"
+              >
+                End Interview
               </button>
             </div>
+
+            {/* Submit */}
+
+            <button
+              onClick={handleSubmitAnswer}
+              disabled={submitting || duration <= 0}
+              className="rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting ? "AI is evaluating..." : "Submit Answer →"}
+            </button>
           </div>
         </div>
       </main>
 
-      {showEndConfirmation && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
-            <h2 className="text-xl font-bold">End Interview?</h2>
+      {/* =====================================================
+          END INTERVIEW MODAL
+      ====================================================== */}
 
-            <p className="text-gray-500 mt-3">
+      {showEndConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-500">
+              !
+            </div>
+
+            <h2 className="mt-4 text-xl font-bold text-slate-900">
+              End Interview?
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
               Are you sure you want to end this interview? You won't be able to
               continue it after submitting.
             </p>
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowEndConfirmation(false)}
-                className="border border-gray-300 px-5 py-2.5 rounded-lg"
+                className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
               >
                 Cancel
               </button>
@@ -514,7 +698,7 @@ const Interview = () => {
               <button
                 onClick={handleCompleteInterview}
                 disabled={submitting}
-                className="bg-red-500 text-white px-5 py-2.5 rounded-lg font-medium disabled:opacity-50"
+                className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
               >
                 {submitting ? "Ending..." : "Yes, End Interview"}
               </button>

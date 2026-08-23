@@ -9,8 +9,15 @@ const { sendError } = require("../middlewares/error.middleware");
 
 const createInterview = async (req, res) => {
   try {
-    const { role, experience, interviewType, difficulty, topics, duration } =
-      req.body;
+    const {
+      role,
+      experience,
+      interviewType,
+      difficulty,
+      topics,
+      duration,
+      totalQuestions,
+    } = req.body;
 
     if (!role || !experience) {
       return res.status(400).json({
@@ -27,6 +34,7 @@ const createInterview = async (req, res) => {
       difficulty: difficulty || "medium",
       topics: topics || [],
       duration: duration || 20,
+      totalQuestions: totalQuestions || 10,
     });
 
     res.status(201).json({
@@ -217,6 +225,25 @@ const submitAnswer = async (req, res) => {
 
     currentQuestion.evaluation = result.evaluation;
 
+    const answeredCount = interview.currentQuestion + 1;
+    const reachedQuestionLimit = answeredCount >= interview.totalQuestions;
+
+    if (reachedQuestionLimit) {
+      // Don't add another question — the interview is done. The frontend
+      // will call the existing complete-interview endpoint next.
+      interview.currentQuestion += 1;
+
+      await interview.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Answer evaluated successfully",
+        evaluation: result.evaluation,
+        isComplete: true,
+        interview,
+      });
+    }
+
     interview.questions.push({
       question: result.nextQuestion,
     });
@@ -230,8 +257,10 @@ const submitAnswer = async (req, res) => {
       message: "Answer evaluated successfully",
       evaluation: result.evaluation,
       nextQuestion: result.nextQuestion,
+      isComplete: false,
       interview,
     });
+    
   } catch (error) {
     sendError(res, error, "Failed to evaluate answer");
   }

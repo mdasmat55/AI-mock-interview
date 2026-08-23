@@ -19,75 +19,143 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white border-b">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
+    <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* =====================================================
+            LOGO
+        ====================================================== */}
+
         <button
           onClick={() => handleNavigate("/dashboard")}
-          className="text-xl font-bold"
+          className="flex items-center gap-2.5"
         >
-          AI Interview
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-600 text-base text-white shadow-sm">
+            🤖
+          </div>
+
+          <div className="hidden sm:block text-left">
+            <p className="text-base font-bold leading-tight text-slate-900">
+              AI Interview
+            </p>
+
+            <p className="text-[9px] font-medium tracking-widest text-slate-400">
+              INTERVIEW PLATFORM
+            </p>
+          </div>
         </button>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">
+        {/* =====================================================
+            DESKTOP NAVIGATION
+        ====================================================== */}
+
+        <div className="hidden items-center gap-2 md:flex">
+          {/* Dashboard */}
           <button
             onClick={() => handleNavigate("/dashboard")}
-            className="text-gray-600 hover:text-black"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-violet-50 hover:text-violet-600"
           >
             Dashboard
           </button>
 
+          {/* Profile */}
           <button
             onClick={() => handleNavigate("/profile")}
-            className="text-gray-600 hover:text-black"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-violet-50 hover:text-violet-600"
           >
             Profile
           </button>
 
-          <span className="text-gray-400">{user?.name}</span>
+          {/* Divider */}
+          <div className="mx-2 h-7 w-px bg-slate-200" />
 
+          {/* User */}
+          <div className="flex items-center gap-2.5 px-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-600">
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </div>
+
+            <span className="max-w-32 truncate text-sm font-medium text-slate-700">
+              {user?.name || "User"}
+            </span>
+          </div>
+
+          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
+            className="ml-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
           >
             Logout
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* =====================================================
+            MOBILE MENU BUTTON
+        ====================================================== */}
+
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="md:hidden text-2xl"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-lg text-slate-600 transition hover:bg-slate-50 md:hidden"
           aria-label="Toggle menu"
         >
           {menuOpen ? "✕" : "☰"}
         </button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* =====================================================
+          MOBILE NAVIGATION
+      ====================================================== */}
+
       {menuOpen && (
-        <div className="md:hidden border-t px-6 py-4">
-          <div className="flex flex-col gap-4">
-            <button
-              onClick={() => handleNavigate("/dashboard")}
-              className="text-left text-gray-600 hover:text-black"
-            >
-              Dashboard
-            </button>
+        <div className="border-t border-slate-200 bg-white md:hidden">
+          <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+            {/* User */}
+            <div className="mb-4 flex items-center gap-3 rounded-xl bg-violet-50 p-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 font-bold text-violet-600">
+                {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </div>
 
-            <button
-              onClick={() => handleNavigate("/profile")}
-              className="text-left text-gray-600 hover:text-black"
-            >
-              Profile
-            </button>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-900">
+                  {user?.name || "User"}
+                </p>
 
-            <div className="text-gray-400 border-t pt-4">{user?.name}</div>
+                <p className="truncate text-xs text-slate-500">
+                  {user?.email || ""}
+                </p>
+              </div>
+            </div>
 
-            <button onClick={handleLogout} className="text-left text-red-500">
-              Logout
-            </button>
+            <div className="space-y-1">
+              {/* Dashboard */}
+              <button
+                onClick={() => handleNavigate("/dashboard")}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-medium text-slate-600 transition hover:bg-violet-50 hover:text-violet-600"
+              >
+                <span>▣</span>
+                Dashboard
+              </button>
+
+              {/* Profile */}
+              <button
+                onClick={() => handleNavigate("/profile")}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-medium text-slate-600 transition hover:bg-violet-50 hover:text-violet-600"
+              >
+                <span>👤</span>
+                Profile
+              </button>
+
+              {/* Divider */}
+              <div className="my-2 border-t border-slate-100" />
+
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
+              >
+                <span>↪</span>
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       )}
