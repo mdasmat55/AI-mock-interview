@@ -67,9 +67,6 @@ const InterviewReport = () => {
     }
   };
 
-  /* =========================================================
-     LOADING
-  ========================================================== */
 
   if (loading) {
     return (
@@ -93,9 +90,6 @@ const InterviewReport = () => {
     );
   }
 
-  /* =========================================================
-     ERROR
-  ========================================================== */
 
   if (error) {
     return (
@@ -131,9 +125,6 @@ const InterviewReport = () => {
       <Navbar />
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
 
         <div className="mb-6">
           <p className="text-sm font-semibold tracking-wide text-violet-600">
@@ -163,9 +154,6 @@ const InterviewReport = () => {
           </div>
         </div>
 
-        {/* =====================================================
-            OVERALL SCORE
-        ====================================================== */}
 
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
@@ -196,9 +184,6 @@ const InterviewReport = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            SCORE CARDS
-        ====================================================== */}
 
         <section className="mb-6">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -215,9 +200,6 @@ const InterviewReport = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            OVERALL ASSESSMENT
-        ====================================================== */}
 
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
           <SectionHeader icon="✦" title="Overall Assessment" />
@@ -227,9 +209,6 @@ const InterviewReport = () => {
           </p>
         </section>
 
-        {/* =====================================================
-            STRENGTHS + WEAKNESSES
-        ====================================================== */}
 
         <section className="mb-6 grid gap-5 md:grid-cols-2">
           {/* Strengths */}
@@ -283,9 +262,6 @@ const InterviewReport = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            RECOMMENDATIONS
-        ====================================================== */}
 
         <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
           <SectionHeader icon="→" title="Recommended Preparation" />
@@ -308,9 +284,6 @@ const InterviewReport = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            QUESTION BY QUESTION REVIEW
-        ====================================================== */}
 
         <section className="mb-8">
           <div className="mb-5">
@@ -470,9 +443,6 @@ const InterviewReport = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            ACTIONS
-        ====================================================== */}
 
         <div className="mb-8 flex flex-col justify-center gap-3 sm:flex-row">
           <button
@@ -492,9 +462,6 @@ const InterviewReport = () => {
         </div>
       </main>
 
-      {/* =====================================================
-          DELETE CONFIRMATION MODAL
-      ====================================================== */}
 
       {showDeleteConfirmation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">
@@ -536,9 +503,6 @@ const InterviewReport = () => {
   );
 };
 
-/* =============================================================
-   SECTION HEADER
-============================================================= */
 
 const SectionHeader = ({
   icon,
@@ -558,9 +522,6 @@ const SectionHeader = ({
   );
 };
 
-/* =============================================================
-   SCORE CARD
-============================================================= */
 
 const ScoreCard = ({ title, score }) => {
   const safeScore = score ?? 0;
@@ -591,9 +552,6 @@ const ScoreCard = ({ title, score }) => {
   );
 };
 
-/* =============================================================
-   EVALUATION SCORE
-============================================================= */
 
 const EvaluationScore = ({ title, score }) => {
   const safeScore = score ?? 0;

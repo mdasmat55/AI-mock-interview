@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 const Home = () => {
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* =====================================================
-          NAVBAR
-      ====================================================== */}
+     
 
       <nav className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -47,9 +45,6 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* =====================================================
-          HERO
-      ====================================================== */}
 
       <main>
         <section className="mx-auto max-w-7xl px-4 pb-16 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pt-24">
@@ -98,9 +93,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* =================================================
-              FEATURE CARDS
-          ================================================== */}
 
           <div className="mx-auto mt-16 grid max-w-5xl gap-4 md:grid-cols-3">
             <FeatureCard
@@ -125,9 +117,6 @@ const Home = () => {
 
       </main>
 
-      {/* =====================================================
-          FOOTER
-      ====================================================== */}
 
       <footer className="border-t border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-6 text-center text-xs text-slate-400 sm:px-6 lg:px-8">
@@ -138,9 +127,6 @@ const Home = () => {
   );
 };
 
-/* =============================================================
-   FEATURE CARD
-============================================================= */
 
 const FeatureCard = ({ icon, title, description }) => {
   return (

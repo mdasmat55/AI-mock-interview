@@ -84,9 +84,7 @@ const Profile = () => {
       <Navbar />
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* =====================================================
-            PAGE HEADER
-        ====================================================== */}
+
 
         <div className="mb-6">
           <p className="text-sm font-semibold text-violet-600">ACCOUNT</p>
@@ -100,9 +98,7 @@ const Profile = () => {
           </p>
         </div>
 
-        {/* =====================================================
-            PROFILE HEADER CARD
-        ====================================================== */}
+
 
         <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -139,9 +135,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* =====================================================
-            SUCCESS MESSAGE
-        ====================================================== */}
 
         {success && (
           <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
@@ -149,9 +142,6 @@ const Profile = () => {
           </div>
         )}
 
-        {/* =====================================================
-            ERROR MESSAGE
-        ====================================================== */}
 
         {error && (
           <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
@@ -159,9 +149,6 @@ const Profile = () => {
           </div>
         )}
 
-        {/* =====================================================
-            PROFILE INFORMATION
-        ====================================================== */}
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
           <div className="mb-6">
@@ -174,9 +161,6 @@ const Profile = () => {
             </p>
           </div>
 
-          {/* ===================================================
-              VIEW MODE
-          ==================================================== */}
 
           {!editing ? (
             <>
@@ -224,9 +208,7 @@ const Profile = () => {
               </div>
             </>
           ) : (
-            /* =================================================
-               EDIT MODE
-            ================================================== */
+       
 
             <form onSubmit={handleSubmit}>
               {/* Name + Email */}
@@ -356,9 +338,6 @@ const Profile = () => {
   );
 };
 
-/* =============================================================
-   INFORMATION CARD
-============================================================= */
 
 const InfoCard = ({ label, value, icon }) => {
   return (

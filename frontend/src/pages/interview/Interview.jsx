@@ -50,9 +50,6 @@ const Interview = () => {
     return Math.max(totalSeconds - elapsedSeconds, 0);
   };
 
-  /* =========================================================
-     SPEECH RECOGNITION
-  ========================================================== */
 
   useEffect(() => {
     const SpeechRecognition =
@@ -104,9 +101,6 @@ const Interview = () => {
     };
   }, []);
 
-  /* =========================================================
-     LOAD INTERVIEW
-  ========================================================== */
 
   useEffect(() => {
     if (hasStartedRef.current) return;
@@ -188,9 +182,6 @@ const Interview = () => {
     loadInterview();
   }, [interviewId, navigate]);
 
-  /* =========================================================
-     TIMER
-  ========================================================== */
 
   useEffect(() => {
     if (loading || duration <= 0) {
@@ -214,9 +205,6 @@ const Interview = () => {
     return () => clearInterval(timer);
   }, [loading]);
 
-  /* =========================================================
-     AUTO COMPLETE
-  ========================================================== */
 
   const handleAutoComplete = async () => {
     try {
@@ -228,9 +216,6 @@ const Interview = () => {
     }
   };
 
-  /* =========================================================
-     SUBMIT ANSWER
-  ========================================================== */
 
   const handleSubmitAnswer = async () => {
     if (!answer.trim()) {
@@ -269,10 +254,6 @@ const Interview = () => {
     }
   };
 
-  /* =========================================================
-     COMPLETE INTERVIEW
-  ========================================================== */
-
   const handleCompleteInterview = async () => {
     try {
       setSubmitting(true);
@@ -290,9 +271,6 @@ const Interview = () => {
     }
   };
 
-  /* =========================================================
-     TEXT TO SPEECH
-  ========================================================== */
 
   const speakQuestion = (text) => {
     if (!text || !("speechSynthesis" in window)) {
@@ -310,17 +288,11 @@ const Interview = () => {
     window.speechSynthesis.speak(utterance);
   };
 
-  /* =========================================================
-     SAVE & EXIT
-  ========================================================== */
 
   const handleSaveAndExit = () => {
     navigate("/dashboard");
   };
 
-  /* =========================================================
-     VOICE INPUT
-  ========================================================== */
 
   const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
@@ -347,9 +319,6 @@ const Interview = () => {
     }
   };
 
-  /* =========================================================
-     TIMER FORMAT
-  ========================================================== */
 
   const minutes = Math.floor(duration / 60);
 
@@ -359,9 +328,6 @@ const Interview = () => {
     seconds,
   ).padStart(2, "0")}`;
 
-  /* =========================================================
-     LOADING
-  ========================================================== */
 
   if (loading) {
     return (
@@ -381,9 +347,6 @@ const Interview = () => {
     );
   }
 
-  /* =========================================================
-     ERROR
-  ========================================================== */
 
   if (error && !question) {
     return (
@@ -415,9 +378,6 @@ const Interview = () => {
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 py-5 sm:px-6 lg:px-8">
-        {/* ===================================================
-            INTERVIEW HEADER
-        ==================================================== */}
 
         <div className="mb-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -481,9 +441,6 @@ const Interview = () => {
           </div>
         </div>
 
-        {/* ===================================================
-            QUESTION CARD
-        ==================================================== */}
 
         <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="mb-5 flex items-center gap-3">
@@ -515,9 +472,6 @@ const Interview = () => {
           </div>
         </div>
 
-        {/* ===================================================
-            ANSWER CARD
-        ==================================================== */}
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="mb-3 flex items-center justify-between">
@@ -541,9 +495,6 @@ const Interview = () => {
             className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-3 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
           />
 
-          {/* =================================================
-              VOICE MODE BUTTON
-          ================================================== */}
 
           {!voiceMode && (
             <button
@@ -559,9 +510,6 @@ const Interview = () => {
             </button>
           )}
 
-          {/* =================================================
-              VOICE MODE PANEL
-          ================================================== */}
 
           {voiceMode && (
             <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50 p-4">
@@ -629,9 +577,6 @@ const Interview = () => {
             </p>
           )}
 
-          {/* =================================================
-              ACTIONS
-          ================================================== */}
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             {/* Secondary actions */}
@@ -667,9 +612,6 @@ const Interview = () => {
         </div>
       </main>
 
-      {/* =====================================================
-          END INTERVIEW MODAL
-      ====================================================== */}
 
       {showEndConfirmation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">

@@ -59,9 +59,7 @@ const Dashboard = () => {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* =====================================================
-            WELCOME SECTION
-        ====================================================== */}
+       
 
         <section className="mb-7">
           <div className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white px-6 py-6 shadow-sm sm:px-8 sm:py-7 md:flex-row md:items-center md:justify-between">
@@ -88,10 +86,7 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            STATISTICS
-        ====================================================== */}
-
+       
         <section className="mb-8">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatCard
@@ -126,9 +121,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            PREVIOUS INTERVIEWS HEADER
-        ====================================================== */}
 
         <section>
           <div className="mb-4 flex items-center justify-between">
@@ -148,9 +140,6 @@ const Dashboard = () => {
             </span>
           </div>
 
-          {/* =====================================================
-              LOADING
-          ====================================================== */}
 
           {loading && (
             <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
@@ -162,9 +151,6 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* =====================================================
-              ERROR
-          ====================================================== */}
 
           {error && (
             <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-600">
@@ -172,9 +158,6 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* =====================================================
-              EMPTY STATE
-          ====================================================== */}
 
           {!loading && !error && interviews.length === 0 && (
             <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
@@ -200,9 +183,6 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* =====================================================
-              INTERVIEW LIST
-          ====================================================== */}
 
           {!loading && !error && interviews.length > 0 && (
             <div className="space-y-4">
@@ -221,9 +201,6 @@ const Dashboard = () => {
   );
 };
 
-/* =============================================================
-   STAT CARD
-============================================================= */
 
 const StatCard = ({ label, value, suffix, icon, accent }) => {
   const accentStyles = {
@@ -310,9 +287,6 @@ const InterviewCard = ({ interview, navigate }) => {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-violet-200 hover:shadow-md sm:p-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        {/* =====================================================
-            INTERVIEW INFORMATION
-        ====================================================== */}
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-4">
@@ -338,9 +312,6 @@ const InterviewCard = ({ interview, navigate }) => {
             </span>
           </div>
 
-          {/* =================================================
-              TOPICS
-          ================================================== */}
 
           {interview.topics?.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
@@ -355,9 +326,6 @@ const InterviewCard = ({ interview, navigate }) => {
             </div>
           )}
 
-          {/* =================================================
-              DATE + DURATION
-          ================================================== */}
 
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500 sm:text-sm">
             <span>📅 {formattedDate}</span>
@@ -366,9 +334,6 @@ const InterviewCard = ({ interview, navigate }) => {
           </div>
         </div>
 
-        {/* =====================================================
-            RIGHT SIDE - SCORE + ACTION
-        ====================================================== */}
 
         <div className="flex items-center justify-between gap-5 border-t border-slate-100 pt-4 lg:border-t-0 lg:pt-0">
           {/* Score */}
@@ -395,9 +360,6 @@ const InterviewCard = ({ interview, navigate }) => {
             </div>
           )}
 
-          {/* =================================================
-              ACTION BUTTONS
-          ================================================== */}
 
           {interview.status === "created" && (
             <button

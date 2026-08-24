@@ -63,9 +63,7 @@ const InterviewSetup = () => {
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
+       
 
         <div className="mb-6">
           <p className="text-sm font-semibold tracking-wide text-violet-600">
@@ -81,10 +79,7 @@ const InterviewSetup = () => {
           </p>
         </div>
 
-        {/* =====================================================
-            FORM CARD
-        ====================================================== */}
-
+       
         <form
           onSubmit={handleSubmit}
           className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"
@@ -144,9 +139,7 @@ const InterviewSetup = () => {
               />
             </div>
 
-            {/* =================================================
-                INTERVIEW TYPE + DIFFICULTY
-            ================================================== */}
+           
 
             <div className="grid gap-5 sm:grid-cols-2">
               <SelectField
@@ -176,9 +169,6 @@ const InterviewSetup = () => {
               />
             </div>
 
-            {/* =================================================
-                TOPICS
-            ================================================== */}
 
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -204,9 +194,6 @@ const InterviewSetup = () => {
               </p>
             </div>
 
-            {/* =================================================
-                DURATION + QUESTIONS
-            ================================================== */}
 
             <div className="grid gap-5 sm:grid-cols-2">
               <SelectField
@@ -236,9 +223,6 @@ const InterviewSetup = () => {
               />
             </div>
 
-            {/* =================================================
-                SUMMARY
-            ================================================== */}
 
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -259,9 +243,6 @@ const InterviewSetup = () => {
               </div>
             </div>
 
-            {/* =================================================
-                BUTTON
-            ================================================== */}
 
             <button
               type="submit"
@@ -277,9 +258,7 @@ const InterviewSetup = () => {
   );
 };
 
-/* =============================================================
-   INPUT FIELD
-============================================================= */
+
 
 const SelectOrInput = ({ label, name, value, onChange, placeholder }) => {
   return (
@@ -305,9 +284,7 @@ const SelectOrInput = ({ label, name, value, onChange, placeholder }) => {
   );
 };
 
-/* =============================================================
-   SELECT FIELD
-============================================================= */
+
 
 const SelectField = ({ label, name, value, onChange, options }) => {
   return (
@@ -332,9 +309,7 @@ const SelectField = ({ label, name, value, onChange, options }) => {
   );
 };
 
-/* =============================================================
-   SUMMARY ITEM
-============================================================= */
+
 
 const SummaryItem = ({ label, value }) => {
   return (
