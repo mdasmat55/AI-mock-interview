@@ -374,7 +374,7 @@ const InterviewCard = ({ interview, navigate }) => {
           {/* Score */}
 
           {isCompleted && (
-            <div className="min-w-[90px]">
+            <div className="min-w-22.5">
               <p className="text-xs font-medium text-slate-500">Score</p>
 
               <p className="mt-0.5 text-2xl font-bold text-slate-900">

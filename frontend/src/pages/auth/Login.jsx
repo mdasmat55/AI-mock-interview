@@ -51,7 +51,7 @@ const Login = () => {
     <div className="min-h-screen bg-slate-50 px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-6xl overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-slate-200">
         {/* ================= LEFT SIDE ================= */}
-        <div className="relative hidden bg-gradient-to-br from-violet-50 via-white to-indigo-50 px-8 py-8 lg:block lg:w-[40%] lg:px-10">
+        <div className="relative hidden bg-linear-to-br from-violet-50 via-white to-indigo-50 px-8 py-8 lg:block lg:w-[40%] lg:px-10">
           {/* Decorative dots */}
           <div className="absolute right-8 top-8 grid grid-cols-4 gap-1.5 opacity-40">
             {[...Array(16)].map((_, index) => (
