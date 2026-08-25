@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.route");
@@ -16,10 +18,12 @@ const PORT = process.env.PORT || 5000;
 // Comma-separated list of allowed origins, e.g.
 // CORS_ORIGIN=https://myapp.com,https://www.myapp.com
 // Falls back to allowing any origin (useful for local dev) when unset.
+
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
   : null;
-
+  
+app.use(helmet());
 app.use(
   cors(
     allowedOrigins
@@ -35,13 +39,24 @@ app.use(
       : undefined,
   ),
 );
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many requests. Please try again later.",
+  },
+});
+
+app.use(generalLimiter);
 app.use(express.json());
+
 app.use("/api/users", userRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/reports", reportRoutes);
-
-connectDB();
-
 app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
@@ -54,6 +69,17 @@ app.get("/", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

@@ -4,24 +4,24 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-
-const generateFirstQuestion = async ({
+const generateInterviewQuestions = async ({
   role,
   experience,
   interviewType,
   difficulty,
   topics,
+  totalQuestions,
   previousQuestions = [],
 }) => {
   const prompt = `
 You are a professional ${interviewType} interviewer.
 
-Candidate role: ${role}
+Candidate information:
+Role: ${role}
 Experience level: ${experience}
 Interview difficulty: ${difficulty}
 Topics: ${topics.join(", ")}
-
-Generate the FIRST interview question for this candidate.
+Number of questions: ${totalQuestions}
 
 Previous questions asked to this candidate in earlier interviews:
 ${
@@ -30,103 +30,28 @@ ${
     : "None"
 }
 
+Generate exactly ${totalQuestions} interview questions.
+
 Rules:
-- Ask exactly ONE question.
-- Do not provide the answer.
-- Do not provide explanations.
-- Keep the question relevant to the role.
+- Questions must be relevant to the candidate's role.
 - Match the requested difficulty.
-- Make it suitable for an actual interview.
-- DO NOT repeat or closely rephrase any question from the previous questions list.
-- Choose a different concept or problem whenever possible.
+- Cover the provided topics appropriately.
+- Questions should be suitable for a real interview.
+- Do not provide answers.
+- Do not provide explanations.
+- Do not repeat or closely rephrase questions from the previous questions list.
 - Avoid repeatedly asking common introductory questions.
-- Return only the question text.
-
-Return only the question text.
-`;
-
-  const response = await ai.models.generateContent({
-    model: "gemini-3.6-flash",
-    contents: prompt,
-  });
-
-  return response.text.trim();
-};
-
-
-const evaluateAnswerAndGenerateNextQuestion = async ({
-  role,
-  experience,
-  interviewType,
-  difficulty,
-  topics,
-  currentQuestion,
-  userAnswer,
-  previousQuestions,
-}) => {
-  const prompt = `
-You are a professional ${interviewType} interviewer.
-
-Candidate information:
-Role: ${role}
-Experience: ${experience}
-Difficulty: ${difficulty}
-Topics: ${topics.join(", ")}
-
-IMPORTANT:
-Evaluate ONLY the candidate's answer against the CURRENT interview question.
-Do NOT evaluate the answer against a previous or future question.
-
-Current interview question:
-${currentQuestion}
-
-Candidate's answer:
-${userAnswer}
-
-Previous questions asked:
-${previousQuestions.join("\n")}
-
-Your task has TWO parts:
-
-1. Evaluate the candidate's answer.
-2. Generate the next interview question.
-
-Evaluation criteria:
-- correctness: 0-10
-- relevance: 0-10
-- clarity: 0-10
-- completeness: 0-10
-- technicalDepth: 0-10
-- overall: 0-10
-
-Also provide:
-- feedback
-- strengths
-- weaknesses
-
-For the next question:
-- Ask exactly ONE question.
-- Do not repeat a previous question.
-- Keep it relevant to the candidate's role.
-- Match the interview difficulty.
-- You may ask a follow-up question if the previous answer needs deeper exploration.
-- Do not provide the answer to the next question.
+- Make the questions reasonably diverse.
+- Return exactly ${totalQuestions} questions.
 
 Return ONLY valid JSON in this exact format:
 
 {
-  "evaluation": {
-    "correctness": 0,
-    "relevance": 0,
-    "clarity": 0,
-    "completeness": 0,
-    "technicalDepth": 0,
-    "overall": 0,
-    "feedback": "",
-    "strengths": [],
-    "weaknesses": []
-  },
-  "nextQuestion": ""
+  "questions": [
+    "Question 1",
+    "Question 2",
+    "Question 3"
+  ]
 }
 `;
 
@@ -138,11 +63,39 @@ Return ONLY valid JSON in this exact format:
     },
   });
 
-  return JSON.parse(response.text);
+  if (!response?.text) {
+    throw new Error("AI did not return a response");
+  }
+
+  let result;
+
+  try {
+    result = JSON.parse(response.text);
+  } catch (error) {
+    throw new Error("AI returned invalid JSON");
+  }
+
+  if (!Array.isArray(result.questions)) {
+    throw new Error("AI response does not contain a valid questions array");
+  }
+
+  if (result.questions.length !== totalQuestions) {
+    throw new Error(
+      `AI returned ${result.questions.length} questions instead of ${totalQuestions}`,
+    );
+  }
+
+  const invalidQuestion = result.questions.some(
+    (question) => typeof question !== "string" || question.trim().length === 0,
+  );
+
+  if (invalidQuestion) {
+    throw new Error("AI returned an invalid interview question");
+  }
+
+  return result.questions.map((question) => question.trim());
 };
 
-
 module.exports = {
-  generateFirstQuestion,
-  evaluateAnswerAndGenerateNextQuestion,
+  generateInterviewQuestions,
 };

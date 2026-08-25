@@ -378,7 +378,6 @@ const Interview = () => {
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 py-5 sm:px-6 lg:px-8">
-
         <div className="mb-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Interview information */}
@@ -441,7 +440,6 @@ const Interview = () => {
           </div>
         </div>
 
-
         <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-sm font-bold text-violet-600">
@@ -472,7 +470,6 @@ const Interview = () => {
           </div>
         </div>
 
-
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="mb-3 flex items-center justify-between">
             <label className="text-sm font-semibold text-slate-800">
@@ -495,7 +492,6 @@ const Interview = () => {
             className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:bg-white focus:ring-3 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
           />
 
-
           {!voiceMode && (
             <button
               type="button"
@@ -509,7 +505,6 @@ const Interview = () => {
               🎙️ Enter Voice Mode
             </button>
           )}
-
 
           {voiceMode && (
             <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50 p-4">
@@ -577,7 +572,6 @@ const Interview = () => {
             </p>
           )}
 
-
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             {/* Secondary actions */}
 
@@ -606,12 +600,11 @@ const Interview = () => {
               disabled={submitting || duration <= 0}
               className="rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting ? "AI is evaluating..." : "Submit Answer →"}
+              {submitting ? "Saving..." : "Submit Answer →"}
             </button>
           </div>
         </div>
       </main>
-
 
       {showEndConfirmation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm">

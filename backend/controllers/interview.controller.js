@@ -1,8 +1,5 @@
 const Interview = require("../models/interview.model");
-const {
-  generateFirstQuestion,
-  evaluateAnswerAndGenerateNextQuestion,
-} = require("../services/ai.service");
+const { generateInterviewQuestions } = require("../services/ai.service");
 
 const Report = require("../models/report.model");
 const { sendError } = require("../middlewares/error.middleware");
@@ -126,18 +123,19 @@ const startInterview = async (req, res) => {
       oldInterview.questions.map((question) => question.question),
     );
 
-    const question = await generateFirstQuestion({
+    const questions = await generateInterviewQuestions({
       role: interview.role,
       experience: interview.experience,
       interviewType: interview.interviewType,
       difficulty: interview.difficulty,
       topics: interview.topics,
+      totalQuestions: interview.totalQuestions,
       previousQuestions,
     });
 
-    interview.questions.push({
+    interview.questions = questions.map((question) => ({
       question,
-    });
+    }));
 
     interview.currentQuestion = 0;
     interview.status = "in-progress";
@@ -148,7 +146,7 @@ const startInterview = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Interview started successfully",
-      question,
+      question: interview.questions[0].question,
       interview,
     });
   } catch (error) {
@@ -208,61 +206,39 @@ const submitAnswer = async (req, res) => {
       });
     }
 
-    const previousQuestions = interview.questions.map((item) => item.question);
-
-    const result = await evaluateAnswerAndGenerateNextQuestion({
-      role: interview.role,
-      experience: interview.experience,
-      interviewType: interview.interviewType,
-      difficulty: interview.difficulty,
-      topics: interview.topics,
-      currentQuestion: currentQuestion.question,
-      userAnswer: answer,
-      previousQuestions,
-    });
-
-    currentQuestion.userAnswer = answer;
-
-    currentQuestion.evaluation = result.evaluation;
+    // Save the candidate's answer.
+    // No Gemini call is made here.
+    currentQuestion.userAnswer = answer.trim();
 
     const answeredCount = interview.currentQuestion + 1;
     const reachedQuestionLimit = answeredCount >= interview.totalQuestions;
 
     if (reachedQuestionLimit) {
-      // Don't add another question — the interview is done. The frontend
-      // will call the existing complete-interview endpoint next.
       interview.currentQuestion += 1;
 
       await interview.save();
 
       return res.status(200).json({
         success: true,
-        message: "Answer evaluated successfully",
-        evaluation: result.evaluation,
+        message: "Answer saved successfully",
         isComplete: true,
         interview,
       });
     }
 
-    interview.questions.push({
-      question: result.nextQuestion,
-    });
-
     interview.currentQuestion += 1;
 
     await interview.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Answer evaluated successfully",
-      evaluation: result.evaluation,
-      nextQuestion: result.nextQuestion,
+      message: "Answer saved successfully",
+      nextQuestion: interview.questions[interview.currentQuestion].question,
       isComplete: false,
       interview,
     });
-    
   } catch (error) {
-    sendError(res, error, "Failed to evaluate answer");
+    sendError(res, error, "Failed to save answer");
   }
 };
 
@@ -332,21 +308,10 @@ const completeInterview = async (req, res) => {
       question.userAnswer?.trim(),
     );
 
-    let score = 0;
-
-    if (answeredQuestions.length > 0) {
-      const totalScore = answeredQuestions.reduce((sum, question) => {
-        return sum + (question.evaluation?.overall || 0);
-      }, 0);
-
-      // question.evaluation.overall is on a 0-10 scale, but interview.score
-      // (and the dashboard/report UI) are on a 0-100 scale. Multiply by 10
-      // so this provisional score matches that scale. It gets replaced with
-      // the authoritative AI-generated overallScore once the report is created.
-      score = Math.round((totalScore / answeredQuestions.length) * 10);
+    if (answeredQuestions.length === 0) {
+      interview.score = 0;
     }
 
-    interview.score = score;
     interview.status = "completed";
     interview.completedAt = new Date();
 
@@ -355,7 +320,7 @@ const completeInterview = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Interview completed successfully",
-      score,
+      score: interview.score,
       interview,
     });
   } catch (error) {

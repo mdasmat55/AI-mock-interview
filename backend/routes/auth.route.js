@@ -7,13 +7,12 @@ const {
 } = require("../controllers/auth.controller");
 
 const { protect } = require("../middlewares/auth.middleware");
+const { authLimiter } = require("../middlewares/rateLimit.middleware");
 
 const router = express.Router();
 
-router.post("/register", register);
-
-router.post("/login", login);
-
+router.post("/register", authLimiter, register);
+router.post("/login", authLimiter, login);
 router.put("/profile", protect, updateProfile);
 
 module.exports = router;

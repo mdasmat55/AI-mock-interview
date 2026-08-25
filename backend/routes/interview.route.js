@@ -1,6 +1,7 @@
 const express = require("express");
 
 const { protect } = require("../middlewares/auth.middleware");
+const { aiLimiter } = require("../middlewares/rateLimit.middleware");
 
 const {
   createInterview,
@@ -20,7 +21,7 @@ router.get("/my-interviews", protect, getMyInterviews);
 
 router.get("/:id", protect, getInterviewById);
 
-router.post("/:id/start", protect, startInterview);
+router.post("/:id/start", protect, aiLimiter, startInterview);
 
 router.post("/:id/answer", protect, submitAnswer);
 
