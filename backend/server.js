@@ -5,7 +5,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
-const connectDB = require("./config/db");
+const { connectDB, disconnectDB } = require("./config/db");
+
 const authRoutes = require("./routes/auth.route");
 const userRoutes = require("./routes/user.route");
 const interviewRoutes = require("./routes/interview.route");
@@ -22,7 +23,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
   : null;
-  
+
 app.use(helmet());
 app.use(
   cors(
@@ -52,7 +53,7 @@ const generalLimiter = rateLimit({
 });
 
 app.use(generalLimiter);
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 app.use("/api/users", userRoutes);
 app.use("/api/interviews", interviewRoutes);
@@ -69,11 +70,13 @@ app.get("/", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
+let server;
+
 const startServer = async () => {
   try {
     await connectDB();
 
-    app.listen(PORT, () => {
+    server = app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
@@ -81,5 +84,22 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+const gracefulShutdown = async (signal) => {
+  console.log(`${signal} received. Shutting down gracefully...`);
+
+  if (server) {
+    server.close(async () => {
+      await disconnectDB();
+      process.exit(0);
+    });
+  } else {
+    await disconnectDB();
+    process.exit(0);
+  }
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 startServer();
